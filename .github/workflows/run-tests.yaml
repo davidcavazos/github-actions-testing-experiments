@@ -30,7 +30,7 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
             -f "name=Run tests" \
-            -f "head_sha=${{ github.event.workflow_run.head_sha || github.sha }}" \
+            -f "head_sha=${{ github.event.workflow_run.head_sha }}" \
             -f "status=in_progress" \
             -f "output[title]=My title" \
             -f "output[summary]=My summary" \
@@ -43,19 +43,18 @@ jobs:
         run: |
           sh tests.sh \
             || gh api --method POST \
-              /repos/${{ github.repository }}/check-runs/${{ steps.check.outputs.id }} \
               -H "Accept: application/vnd.github+json" \
               -H "X-GitHub-Api-Version: 2022-11-28" \
               -f "status=completed" \
-              -f "conclusion=failure"
-
+              -f "conclusion=failure" \
+              /repos/${{ github.repository }}/check-runs/${{ steps.check.outputs.id }}
 
       # https://docs.github.com/en/rest/checks/runs?apiVersion=2022-11-28#update-a-check-run
       - name: Mark as successful
         run: |
-          gh api --method POST \
-            /repos/${{ github.repository }}/check-runs/${{ steps.check.outputs.id }} \
+          gh api --method PATCH \
             -H "Accept: application/vnd.github+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
             -f "status=completed" \
-            -f "conclusion=success"
+            -f "conclusion=success" \
+            /repos/${{ github.repository }}/check-runs/${{ steps.check.outputs.id }}
