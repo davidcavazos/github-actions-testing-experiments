@@ -7,3 +7,5 @@ jobs:
   authorize:
     name: Authorized
     runs-on: ubuntu-latest
+    steps:
+      - run: echo "Success"
