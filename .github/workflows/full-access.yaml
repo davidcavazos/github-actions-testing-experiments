@@ -6,7 +6,7 @@ on:
       - main
   workflow_run:
     workflows:
-      - authorized
+      - authorize
     types:
       - completed
   workflow_dispatch: # Manual runs

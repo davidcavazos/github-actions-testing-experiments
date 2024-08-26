@@ -4,6 +4,6 @@ on:
   pull_request:
 
 jobs:
-  authorized:
-    name: Authorized checks
+  authorize:
+    name: Authorized
     runs-on: ubuntu-latest
