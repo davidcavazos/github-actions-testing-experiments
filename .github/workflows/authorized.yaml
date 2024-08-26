@@ -1,9 +1,9 @@
 name: PR
 
 on:
-    pull_request:
+  pull_request:
 
 jobs:
-    authorized:
-        name: Authorized checks
-        runs-on: ubuntu-latest
+  authorized:
+    name: Authorized checks
+    runs-on: ubuntu-latest
