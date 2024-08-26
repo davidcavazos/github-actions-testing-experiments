@@ -19,6 +19,7 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
     steps:
+      - uses: actions/checkout@v4
       # https://www.kenmuse.com/blog/creating-github-checks
       # https://docs.github.com/en/rest/checks/runs?apiVersion=2022-11-28#create-a-check-run
       - name: Create check
