@@ -40,7 +40,7 @@ jobs:
           )
           echo "id=$CHECK_ID" >> $GITHUB_OUTPUT
 
-      - name: Running tests
+      - name: Running sensitive code
         run: |
           sh tests.sh \
             || gh api --method PATCH \
