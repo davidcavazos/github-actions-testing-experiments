@@ -31,6 +31,7 @@ jobs:
             -f "name=Job with full permissions" \
             -f "head_sha=${{ github.event.workflow_run.head_sha || github.sha }}" \
             -f "status=in_progress" \
+            -f "details_url=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
             -f "output[title]=My title" \
             -f "output[summary]=My summary" \
             -f "output[text]=More detailed Markdown **text**" \
