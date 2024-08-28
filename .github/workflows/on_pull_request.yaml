@@ -3,9 +3,10 @@ name: on_pull_request
 on:
   pull_request:
     types:
-      - labeled
       - opened
-      - edited
+      - synchronize
+      - reopened
+      - labeled
 
 jobs:
   blocked:
