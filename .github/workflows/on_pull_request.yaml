@@ -10,7 +10,7 @@ on:
 
 jobs:
   allow:
-    name: Allowed
+    name: Waiting for check
     runs-on: ubuntu-latest
     steps:
       - run: echo "✅ Running job with full permissions"
