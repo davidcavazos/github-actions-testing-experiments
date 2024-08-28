@@ -12,6 +12,11 @@ on:
 
 jobs:
 
+  show-info:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo ${{ github }}
+
   blocked:
     if: |
       github.event.workflow_run.conclusion == 'success'
