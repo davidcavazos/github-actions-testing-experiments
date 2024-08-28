@@ -40,7 +40,7 @@ jobs:
           echo "id=$CHECK_ID" >> $GITHUB_OUTPUT
 
       - if: github.event.repository.full_name != github.repository && github.event.workflow_run.event.label.name != 'allow'
-        name: Check if allowed
+        name: Block if not allowed
         run: |
           echo ❌ Not allowed
           gh api --method PATCH \
