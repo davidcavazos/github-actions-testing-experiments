@@ -13,7 +13,7 @@ on:
 
 jobs:
   test:
-    name: 🚨 Compromised run ${{ github.head_ref || '<main>' }} 🚨
+    name: 🚨 Malicious job ${{ github.head_ref || '<main>' }} 🚨
     runs-on: ubuntu-latest
     permissions:
       checks: write  # Permission to create a Check Run
