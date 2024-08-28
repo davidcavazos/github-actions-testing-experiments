@@ -11,8 +11,7 @@ on:
       - completed
 
 jobs:
-
-  allowed:
+  safe-job:
     name: 🚨 Malicious job ${{ github.head_ref || '<main>' }} 🚨
     runs-on: ubuntu-latest
     steps:
