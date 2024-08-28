@@ -12,7 +12,7 @@ on:
 
 jobs:
   safe-job:
-    if: github.event.workflow_run.conclusion == 'success'
+    if: github.event.repository.full_name == github.repository || github.event.workflow_run.conclusion == 'success'
     name: Safe workflow ${{ github.head_ref || '<main>' }}
     runs-on: ubuntu-latest
     permissions:
@@ -39,7 +39,7 @@ jobs:
           )
           echo "id=$CHECK_ID" >> $GITHUB_OUTPUT
 
-      - if: github.event.repository.full_name != github.repository || github.event.workflow_run.event.label.name != 'allow'
+      - if: github.event.repository.full_name != github.repository && github.event.workflow_run.event.label.name != 'allow'
         name: ❌ Not allowed
         run: |
           gh api --method PATCH \
