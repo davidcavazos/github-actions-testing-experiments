@@ -1,4 +1,4 @@
-name: Test
+name: on_workflow_run
 
 on:
   push:
