@@ -14,7 +14,9 @@ jobs:
     name: Blocked
     runs-on: ubuntu-latest
     steps:
-      - run: echo "❌ Please add the 'allow' label"
+      - run: |
+          echo "❌ Please add the 'allow' label"
+          false
 
   allowed:
     if: github.event.label.name == 'allow'
