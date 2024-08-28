@@ -9,7 +9,6 @@ on:
       - on_pull_request
     types:
       - completed
-  workflow_dispatch: # Manual runs
 
 jobs:
 
