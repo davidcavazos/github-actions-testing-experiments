@@ -14,8 +14,8 @@ on:
 jobs:
 
   blocked:
-    if: github.event.workflow_run.event.label.name != 'allow' || github.event.workflow_run.event.review.state != 'approved'
-    name: Blocked, not authorized
+    if: github.event.workflow_run.event.label.name != 'allow'
+    name: Blocked, does not have 'allow' label
     runs-on: ubuntu-latest
     permissions:
       checks: write  # Permission to create a Check Run
@@ -47,7 +47,7 @@ jobs:
 
 
   allowed:
-    if: github.event.workflow_run.event.label.name == 'allow' && github.event.workflow_run.event.review.state == 'approved'
+    if: github.event.workflow_run.event.label.name == 'allow'
     name: Sensitive workflow ${{ github.head_ref || '<main>' }}
     runs-on: ubuntu-latest
     permissions:

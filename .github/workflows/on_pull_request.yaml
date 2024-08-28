@@ -2,14 +2,21 @@ name: on_pull_request
 
 on:
   pull_request:
-  pull_request_review:
     types:
-      - submitted
+      - labeled
 
 
 jobs:
-  authorize:
-    name: Authorized
+  blocked:
+    if: github.event.label.name != 'allow'
+    name: Blocked
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "❌ Please add the 'allow' label"
+
+  allowed:
+    if: github.event.label.name == 'allow'
+    name: Allowed
     runs-on: ubuntu-latest
     steps:
       - run: echo "✅"
