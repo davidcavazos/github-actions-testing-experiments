@@ -12,7 +12,30 @@ on:
   workflow_dispatch: # Manual runs
 
 jobs:
-  test:
+
+  blocked:
+    if: github.event.workflow_run.event.label.name != 'allow' || github.event.workflow_run.event.review.state != 'approved'
+    name: Blocked, not authorized
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write  # Permission to create a Check Run
+    env:
+      GH_TOKEN: ${{ github.token }}  # Needed for `gh api`
+    steps:
+      - name: Block PR
+        run: |
+          gh api --method POST \
+            /repos/${{ github.repository }}/check-runs \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            -f "name=Job not allowed" \
+            -f "head_sha=${{ github.event.workflow_run.head_sha || github.sha }}" \
+            -f "status=failure" \
+            -f "output[title]=My title" \
+            -f "output[summary]=My summary" \
+            -f "output[text]=More detailed Markdown **text**"
+
+  allowed:
     if: github.event.workflow_run.event.label.name == 'allow' && github.event.workflow_run.event.review.state == 'approved'
     name: Sensitive workflow ${{ github.head_ref || '<main>' }}
     runs-on: ubuntu-latest
