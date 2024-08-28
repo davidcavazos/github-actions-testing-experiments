@@ -13,11 +13,11 @@ on:
 
 jobs:
   test:
-    name: Run tests ${{ github.head_ref || '<main>' }}
+    name: 🚨 Compromised run ${{ github.head_ref || '<main>' }} 🚨
     runs-on: ubuntu-latest
     permissions:
       checks: write  # Permission to create a Check Run
     env:
-      GH_TOKEN: ${{ github.token }}
+      GH_TOKEN: ${{ github.token }}  # Needed for `gh api`
     steps:
       - run: echo "🚨 Malicious unauthorized code with full permissions 🚨"
