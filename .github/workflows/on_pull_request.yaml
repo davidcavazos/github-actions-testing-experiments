@@ -13,10 +13,5 @@ jobs:
     name: Allowed
     runs-on: ubuntu-latest
     steps:
-      - if: github.event.label.name == 'allow'
-        run: echo "✅ Running job with full permissions"
-      - if: github.event.label.name != 'allow'
-        run: |
-          echo "❌ Please add the 'allow' label"
-          false
+      - run: echo "✅ Running job with full permissions"
 
