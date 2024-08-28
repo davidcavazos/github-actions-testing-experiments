@@ -6,7 +6,7 @@ on:
       - main
   workflow_run:
     workflows:
-      - authorize
+      - on_pull_request
     types:
       - completed
   workflow_dispatch: # Manual runs
