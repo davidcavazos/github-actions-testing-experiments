@@ -9,18 +9,14 @@ on:
       - labeled
 
 jobs:
-  blocked:
-    if: github.event.label.name != 'allow'
-    name: Blocked
-    runs-on: ubuntu-latest
-    steps:
-      - run: |
-          echo "❌ Please add the 'allow' label"
-          false
-
-  allowed:
-    if: github.event.label.name == 'allow'
+  allow:
     name: Allowed
     runs-on: ubuntu-latest
     steps:
-      - run: echo "✅"
+      - if: github.event.label.name == 'allow'
+        run: echo "✅ Running job with full permissions"
+      - if: github.event.label.name != 'allow'
+        run: |
+          echo "❌ Please add the 'allow' label"
+          false
+
