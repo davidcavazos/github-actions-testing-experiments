@@ -15,10 +15,10 @@ jobs:
   show-info:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - run: echo "${{ github.repository }}"
-      - run: echo "${{ github.event.workflow_run.repository.full_name }}"
-      - run: echo "${{ toJSON(github) }}"
+      - run: echo "github.repository = ${{ github.repository }}"
+      - run: echo "github.event.workflow_run.repository.full_name = ${{ github.event.workflow_run.repository.full_name }}"
+      - run: echo "github.event.workflow_run = ${{ toJSON(github.event.workflow_run) }}"
+      - run: echo "github = ${{ toJSON(github) }}"
 
   blocked:
     if: |
