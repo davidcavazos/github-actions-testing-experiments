@@ -15,3 +15,6 @@ jobs:
 
   allowed:
     name: 🚨 Malicious job ${{ github.head_ref || '<main>' }} 🚨
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Run code with full permissions, can expose secrets"
