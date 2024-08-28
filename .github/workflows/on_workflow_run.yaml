@@ -16,8 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo "github.repository = ${{ github.repository }}"
-      - run: echo "github.event.workflow_run.repository.full_name = ${{ github.event.workflow_run.repository.full_name }}"
-      - run: echo "github.event.workflow_run = ${{ toJSON(github.event.workflow_run) }}"
+      - run: echo "github.event.repository.full_name = ${{ github.event.repository.full_name }}"
+      - run: echo "github.event = ${{ toJSON(github.event) }}"
       - run: echo "github = ${{ toJSON(github) }}"
 
   blocked:
@@ -58,7 +58,7 @@ jobs:
     if: |
       github.event.workflow_run.conclusion == 'success'
       && github.event.workflow_run.event.label.name == 'allow'
-      || github.event.workflow_run.repository.full_name == github.repository
+      || github.event.repository.full_name == github.repository
     name: Sensitive workflow ${{ github.head_ref || '<main>' }}
     runs-on: ubuntu-latest
     permissions:
