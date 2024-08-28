@@ -9,12 +9,13 @@ on:
       - on_pull_request
     types:
       - completed
-  workflow_dispatch: # Manual runs
 
 jobs:
 
   blocked:
-    if: github.event.workflow_run.event.label.name != 'allow'
+    if: |
+      github.event.workflow_run.conclusion == 'success'
+      && github.event.workflow_run.event.label.name != 'allow'
     name: Blocked, does not have 'allow' label
     runs-on: ubuntu-latest
     permissions:
@@ -45,9 +46,10 @@ jobs:
               -f "conclusion=failure" \
               /repos/${{ github.repository }}/check-runs/$CHECK_ID
 
-
   allowed:
-    if: github.event.workflow_run.event.label.name == 'allow'
+    if: |
+      github.event.workflow_run.conclusion == 'success'
+      && github.event.workflow_run.event.label.name == 'allow'
     name: Sensitive workflow ${{ github.head_ref || '<main>' }}
     runs-on: ubuntu-latest
     permissions:
