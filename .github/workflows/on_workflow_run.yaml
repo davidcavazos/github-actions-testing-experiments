@@ -15,7 +15,7 @@ jobs:
   show-info:
     runs-on: ubuntu-latest
     steps:
-      - run: echo ${{ github }}
+      - run: echo ${{ toJSON(github) }}
 
   blocked:
     if: |
