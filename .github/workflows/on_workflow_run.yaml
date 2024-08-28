@@ -40,8 +40,8 @@ jobs:
           )
           echo "id=$CHECK_ID" >> $GITHUB_OUTPUT
 
-      - run: echo "github.event.repository.full_name = ${{ github.event.repository.full_name }}"
-      - run: echo "github.repository = ${{ github.repository }}"
+      - run: echo "github.event = ${{ toJson(github.event) }}"
+      - run: echo "github = ${{ toJson(github) }}"
 
       - if: github.event.repository.full_name != github.repository && github.event.workflow_run.event.label.name != 'allow'
         name: Block if not allowed
