@@ -20,7 +20,7 @@ jobs:
           echo "❌ Please add the 'allow' label"
           false
 
-      - name: Create job check
+      - name: Create job status
         uses: actions/github-script@v7
         with:
           # https://docs.github.com/en/rest/commits/statuses?apiVersion=2022-11-28#create-a-commit-status
