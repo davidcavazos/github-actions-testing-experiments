@@ -10,7 +10,7 @@ on:
 
 jobs:
   allow:
-    name: Waiting for check
+    name: Authorizing, please wait for tests to run
     runs-on: ubuntu-latest
     steps:
       - if: github.event.label.name == 'allow'
