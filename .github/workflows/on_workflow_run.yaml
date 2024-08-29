@@ -19,5 +19,4 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}  # Needed for `gh api`
     steps:
-      - name: GitHub context information
-        run: echo "🚨 Running code with full permissions, can expose secrets!"
+      - run: echo "🚨 Running code with full permissions, can expose secrets!"
