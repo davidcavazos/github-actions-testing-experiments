@@ -69,6 +69,7 @@ jobs:
             await github.rest.checks.update({
                 owner: "${{ github.repository_owner }}",
                 repo: "${{ github.event.repository.name }}",
+                check_run_id: "${{ steps.check.outputs.result.data.id }}",
                 status: "completed",
                 conclusion: "failure",
             })
@@ -91,6 +92,7 @@ jobs:
             github.rest.checks.update({
                 owner: "${{ github.repository_owner }}",
                 repo: "${{ github.event.repository.name }}",
+                check_run_id: "${{ steps.check.outputs.result.data.id }}",
                 status: "completed",
                 conclusion: "success",
             })
