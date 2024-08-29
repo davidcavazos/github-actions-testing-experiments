@@ -72,6 +72,7 @@ jobs:
                 state: "pending",
                 target_url: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
                 description: "My description",
+                context: "continuous-integration",
             });
             console.log(JSON.stringify(response));
             return response.data.id;
@@ -97,6 +98,9 @@ jobs:
                 repo: "${{ github.event.repository.name }}",
                 sha: "${{ github.event.workflow_run.head_sha || github.sha }}",
                 state: "failure",
+                target_url: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+                description: "My description",
+                context: "continuous-integration",
             });
             throw "not allowed"
 
@@ -128,4 +132,7 @@ jobs:
                 repo: "${{ github.event.repository.name }}",
                 sha: "${{ github.event.workflow_run.head_sha || github.sha }}",
                 state: "success",
+                target_url: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+                description: "My description",
+                context: "continuous-integration",
             });
