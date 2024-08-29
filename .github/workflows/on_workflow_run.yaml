@@ -70,7 +70,7 @@ jobs:
                 description: "Job not allowed, please add 'allow' label",
                 context: "Job result",
             });
-            throw "Job not allowed, please add the 'allow' label."
+            throw "Job not allowed, please add the 'allow' label on ${{ github.event.repository.pulls_url }}"
 
       - uses: actions/checkout@v4
         with:
