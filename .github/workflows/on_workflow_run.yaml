@@ -22,11 +22,11 @@ jobs:
     steps:
       - name: GitHub context information
         run: |
-          # github.repository_owner: ${{ github.repository_owner }}
-          # github.event.repository.name: ${{ github.event.repository.name }}
-          # github.sha: ${{ github.sha }}"
-          # github.event.workflow_run.head_sha: ${{ github.event.workflow_run.head_sha }}"
-          # github.event.workflow_run.head_repository.fork: ${{ github.event.workflow_run.head_repository.fork }}"
+          echo "github.repository_owner: ${{ github.repository_owner }}"
+          echo "github.event.repository.name: ${{ github.event.repository.name }}"
+          echo "github.sha: ${{ github.sha }}"
+          echo "github.event.workflow_run.head_sha: ${{ github.event.workflow_run.head_sha }}"
+          echo "github.event.workflow_run.head_repository.fork: ${{ github.event.workflow_run.head_repository.fork }}"
           echo "github.event.workflow_run = $CONTEXT_WORKFLOW_RUN"
           echo "github.event.repository = $CONTEXT_REPOSITORY"
           echo "github.event = $CONTEXT_EVENT"
