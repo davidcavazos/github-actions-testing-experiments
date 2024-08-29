@@ -42,47 +42,42 @@ jobs:
       # https://octokit.github.io/rest.js/v21/#checks
 
       # https://docs.github.com/en/rest/checks/runs?apiVersion=2022-11-28#create-a-check-run
-      # - name: Create job check
-      #   uses: actions/github-script@v7
-      #   id: check
-      #   with:
-      #     result-encoding: string
-      #     script: |
-      #       github.rest.checks.create({
-      #           owner,
-      #           repo,
-      #           name,
-      #           head_sha,
-      #           output.title,
-      #           output.summary,
-      #           output.annotations[].path,
-      #           output.annotations[].start_line,
-      #           output.annotations[].end_line,
-      #           output.annotations[].annotation_level,
-      #           output.annotations[].message,
-      #           output.images[].alt,
-      #           output.images[].image_url,
-      #           actions[].label,
-      #           actions[].description,
-      #           actions[].identifier,
-      #       })
-
       - name: Create job check
+        uses: actions/github-script@v7
         id: check
-        run: |
-          CHECK_ID=$(gh api --method POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            -f "name=Job with full permissions" \
-            -f "head_sha=${{ github.event.workflow_run.head_sha || github.sha }}" \
-            -f "status=in_progress" \
-            -f "output[title]=My title" \
-            -f "output[summary]=My summary" \
-            -f "output[text]=More detailed Markdown **text**" \
-            /repos/${{ github.repository }}/check-runs \
-            --jq ".id" \
-          )
-          echo "id=$CHECK_ID" >> $GITHUB_OUTPUT
+        with:
+          result-encoding: string
+          script: |
+            github.rest.checks.create({
+                owner: ${{ github.repository_owner }},
+                repo: ${{ github.event.repository.name }},
+                name: "Job with full permissions",
+                head_sha: ${{ github.event.workflow_run.head_sha || github.sha }},
+                status: "in_progress",
+                details_url: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+                output: {
+                  title: "My title",
+                  summary: "My summary",
+                  text: "More detailed Markdown **text**",
+                },
+            })
+
+      # - name: Create job check
+      #   id: check
+      #   run: |
+      #     CHECK_ID=$(gh api --method POST \
+      #       -H "Accept: application/vnd.github+json" \
+      #       -H "X-GitHub-Api-Version: 2022-11-28" \
+      #       -f "name=Job with full permissions" \
+      #       -f "head_sha=${{ github.event.workflow_run.head_sha || github.sha }}" \
+      #       -f "status=in_progress" \
+      #       -f "output[title]=My title" \
+      #       -f "output[summary]=My summary" \
+      #       -f "output[text]=More detailed Markdown **text**" \
+      #       /repos/${{ github.repository }}/check-runs \
+      #       --jq ".id" \
+      #     )
+      #     echo "id=$CHECK_ID" >> $GITHUB_OUTPUT
 
       - if: github.event.workflow_run.head_repository.fork && github.event.workflow_run.event.label.name != 'allow'
         name: Block if not allowed
