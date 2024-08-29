@@ -49,10 +49,10 @@ jobs:
           result-encoding: string
           script: |
             github.rest.checks.create({
-                owner: ${{ github.repository_owner }},
-                repo: ${{ github.event.repository.name }},
+                owner: "${{ github.repository_owner }}",
+                repo: "${{ github.event.repository.name }}",
                 name: "Job with full permissions",
-                head_sha: ${{ github.event.workflow_run.head_sha || github.sha }},
+                head_sha: "${{ github.event.workflow_run.head_sha || github.sha }}",
                 status: "in_progress",
                 details_url: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
                 output: {
