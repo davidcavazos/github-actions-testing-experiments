@@ -60,8 +60,7 @@ jobs:
                   text: "More detailed Markdown **text**",
                 },
             })
-      - run: echo "${{ steps.check.outputs.result.id }}"
-      - run: echo "${{ steps.check.outputs.result.run_id }}"
+      - run: echo "${{ steps.check.outputs.result.data.id }}"
       - run: echo "$JSON"
         env:
           JSON: ${{ steps.check.outputs.result }}
