@@ -70,7 +70,7 @@ jobs:
                 description: "Job not allowed, please add 'allow' label",
                 context: "Job result",
             });
-            throw "not allowed"
+            throw "Job not allowed, please add the 'allow' label."
 
       - uses: actions/checkout@v4
         with:
