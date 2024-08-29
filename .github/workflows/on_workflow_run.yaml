@@ -55,7 +55,7 @@ jobs:
               -f "status=completed" \
               -f "conclusion=failure" \
               /repos/${{ github.repository }}/check-runs/${{ steps.check.outputs.id }} \
-          || false
+          && false
 
       - uses: actions/checkout@v4
         with:
