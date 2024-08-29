@@ -49,6 +49,7 @@ jobs:
           # https://docs.github.com/en/rest/checks/runs?apiVersion=2022-11-28#create-a-check-run
           result-encoding: string
           script: |
+            /*
             const response = await github.rest.checks.create({
                 owner: "${{ github.repository_owner }}",
                 repo: "${{ github.event.repository.name }}",
@@ -62,6 +63,16 @@ jobs:
                   text: "More detailed Markdown **text**",
                 },
             });
+            */
+            const response = await github.rest.repos.createCommitStatus({
+                owner: "${{ github.repository_owner }}",
+                repo: "${{ github.event.repository.name }}",
+                sha: "${{ github.event.workflow_run.head_sha || github.sha }}",
+                state: "pending",
+                target_url: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+                description: "My description",
+            });
+            console.log(JSON.stringify(response));
             return response.data.id;
 
       - if: github.event.workflow_run.head_repository.fork && github.event.workflow_run.event.label.name != 'allow'
