@@ -46,7 +46,6 @@ jobs:
         uses: actions/github-script@v7
         id: check
         with:
-          # result-encoding: string
           script: |
             return github.rest.checks.create({
                 owner: "${{ github.repository_owner }}",
@@ -61,8 +60,9 @@ jobs:
                   text: "More detailed Markdown **text**",
                 },
             })
-      - run: echo "${{ toJson(steps.check.outputs) }}"
-      - run: echo "${{ steps.check.outputs.result }}"
+      - run: echo "$JSON"
+        env:
+          JSON: ${{ steps.check.outputs.result }}
 
       # - name: Create job check
       #   id: check
