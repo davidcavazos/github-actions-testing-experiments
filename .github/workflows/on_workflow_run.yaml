@@ -55,7 +55,7 @@ jobs:
                 name: "Job with full permissions",
                 head_sha: "${{ github.event.workflow_run.head_sha || github.sha }}",
                 status: "in_progress",
-                details_url: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.head_repository.id }}/job/${{ github.run_id }}",
+                details_url: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
                 output: {
                   title: "My title",
                   summary: "My summary",
