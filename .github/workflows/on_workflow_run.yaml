@@ -25,18 +25,18 @@ jobs:
       - run: echo "github.sha = ${{ github.sha }}"
       - run: echo "github.event.workflow_run.head_sha = ${{ github.event.workflow_run.head_sha }}"
       - run: echo "github.event.workflow_run.head_repository.fork = ${{ github.event.workflow_run.head_repository.fork }}"
-      - run: echo "github.event.workflow_run = $env.JSON"
+      - run: echo "github.event.workflow_run = $JSON"
         env:
-          JSON: toJson(github.event.workflow_run)
-      - run: echo "github.event.repository = $env.JSON"
+          JSON: ${{ toJson(github.event.workflow_run) }}
+      - run: echo "github.event.repository = $JSON"
         env:
-          JSON: toJson(github.event.repository)
-      - run: echo "github.event = $env.JSON"
+          JSON: ${{ toJson(github.event.repository) }}
+      - run: echo "github.event = $JSON"
         env:
-          JSON: toJson(github.event)
-      - run: echo "github = $env.JSON"
+          JSON: ${{ toJson(github.event) }}
+      - run: echo "github = $JSON"
         env:
-          JSON: toJson(github)
+          JSON: ${{ toJson(github) }}
 
       # https://www.kenmuse.com/blog/creating-github-checks
       # https://octokit.github.io/rest.js/v21/#checks
