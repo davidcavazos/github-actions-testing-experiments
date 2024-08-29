@@ -10,7 +10,7 @@ on:
 
 jobs:
   allow:
-    name: Authorizing, please wait for tests to run
+    name: Authorizing
     runs-on: ubuntu-latest
     steps:
       - run: echo "🚨 Skipping check and running job with full permissions"
