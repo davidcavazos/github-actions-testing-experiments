@@ -12,6 +12,8 @@ jobs:
   allow:
     name: Authorizing, please wait for tests to run
     runs-on: ubuntu-latest
+    permissions:
+      statuses: write  # Permission to create a commit status
     steps:
       - if: github.event.label.name == 'allow'
         run: echo "✅ Running job with full permissions"
