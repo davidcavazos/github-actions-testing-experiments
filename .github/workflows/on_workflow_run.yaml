@@ -16,7 +16,8 @@ jobs:
     name: Safe workflow ${{ github.head_ref || '<main>' }}
     runs-on: ubuntu-latest
     permissions:
-      checks: write  # Permission to create a Check Run
+      # checks: write  # Permission to create a Check Run
+      statuses: write  # Permission to create a commit status
     env:
       GH_TOKEN: ${{ github.token }}  # Needed for `gh api`
     steps:
@@ -82,6 +83,7 @@ jobs:
           # https://octokit.github.io/rest.js/v21/#checks-update
           # https://docs.github.com/en/rest/checks/runs?apiVersion=2022-11-28#update-a-check-run
           script: |
+            /*
             await github.rest.checks.update({
                 owner: "${{ github.repository_owner }}",
                 repo: "${{ github.event.repository.name }}",
@@ -89,6 +91,13 @@ jobs:
                 status: "completed",
                 conclusion: "failure",
             })
+            */
+            await github.rest.repos.createCommitStatus({
+                owner: "${{ github.repository_owner }}",
+                repo: "${{ github.event.repository.name }}",
+                sha: "${{ github.event.workflow_run.head_sha || github.sha }}",
+                state: "failure",
+            });
             throw "not allowed"
 
       - uses: actions/checkout@v4
@@ -105,6 +114,7 @@ jobs:
           # https://octokit.github.io/rest.js/v21/#checks-update
           # https://docs.github.com/en/rest/checks/runs?apiVersion=2022-11-28#update-a-check-run
           script: |
+            /*
             github.rest.checks.update({
                 owner: "${{ github.repository_owner }}",
                 repo: "${{ github.event.repository.name }}",
@@ -112,3 +122,10 @@ jobs:
                 status: "completed",
                 conclusion: "success",
             })
+            */
+            await github.rest.repos.createCommitStatus({
+                owner: "${{ github.repository_owner }}",
+                repo: "${{ github.event.repository.name }}",
+                sha: "${{ github.event.workflow_run.head_sha || github.sha }}",
+                state: "success",
+            });
