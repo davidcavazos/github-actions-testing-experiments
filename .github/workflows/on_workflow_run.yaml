@@ -52,7 +52,7 @@ jobs:
                 sha: "${{ github.event.workflow_run.head_sha || github.sha }}",
                 state: "pending",
                 target_url: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
-                description: "Please wait for job to finish, click 'Details' to see progress.",
+                description: "The job is running, click 'Details' to see progress.",
                 context: "Job result",
             });
 
