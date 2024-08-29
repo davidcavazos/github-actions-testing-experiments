@@ -12,10 +12,12 @@ jobs:
   allow:
     name: Authorizing, please wait for tests to run
     runs-on: ubuntu-latest
+    permissions:
+      statuses: write  # Permission to create a commit status
     steps:
       - run: echo "✅ Running job with full permissions"
 
-      - name: Create job check
+      - name: Create job status
         uses: actions/github-script@v7
         with:
           # https://docs.github.com/en/rest/commits/statuses?apiVersion=2022-11-28#create-a-commit-status

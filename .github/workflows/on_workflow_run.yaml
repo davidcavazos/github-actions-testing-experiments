@@ -14,5 +14,9 @@ jobs:
   safe-job:
     name: 🚨 Malicious job ${{ github.head_ref || '<main>' }} 🚨
     runs-on: ubuntu-latest
+    permissions:
+      statuses: write  # Permission to create a commit status
+    env:
+      GH_TOKEN: ${{ github.token }}  # Needed for `gh api`
     steps:
       - run: echo "🚨 Running code with full permissions, can expose secrets!"
