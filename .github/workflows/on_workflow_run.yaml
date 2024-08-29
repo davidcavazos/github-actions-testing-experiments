@@ -67,10 +67,10 @@ jobs:
                 sha: "${{ github.event.workflow_run.head_sha || github.sha }}",
                 state: "failure",
                 target_url: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
-                description: "Job not allowed, please add 'allow' label",
+                description: "Job not allowed, please add the 'allow' label.",
                 context: "Job result",
             });
-            throw "Job not allowed, please add the 'allow' label on ${{ github.event.repository.pulls_url }}"
+            throw "Job not allowed, please add the 'allow' label."
 
       - uses: actions/checkout@v4
         with:
