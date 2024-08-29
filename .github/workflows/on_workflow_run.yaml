@@ -59,8 +59,8 @@ jobs:
                   summary: "My summary",
                   text: "More detailed Markdown **text**",
                 },
-            })
-      - run: echo "${{ steps.check.outputs.result.data.id }}"
+            }).id
+      - run: echo "${{ steps.check.outputs.result }}"
       - run: echo "$JSON"
         env:
           JSON: ${{ steps.check.outputs.result }}
