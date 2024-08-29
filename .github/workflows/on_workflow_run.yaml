@@ -47,7 +47,7 @@ jobs:
         id: check
         with:
           script: |
-            const result = github.rest.checks.create({
+            const result = await github.rest.checks.create({
                 owner: "${{ github.repository_owner }}",
                 repo: "${{ github.event.repository.name }}",
                 name: "Job with full permissions",
@@ -60,6 +60,7 @@ jobs:
                   text: "More detailed Markdown **text**",
                 },
             })
+            console.log(result)
             console.log(JSON.stringify(result))
             return result
       - run: echo "${{ steps.check.outputs.result }}"
