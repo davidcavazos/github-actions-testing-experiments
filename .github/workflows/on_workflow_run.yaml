@@ -24,6 +24,7 @@ jobs:
         run: |
           echo "github.repository_owner: ${{ github.repository_owner }}"
           echo "github.event.repository.name: ${{ github.event.repository.name }}"
+          echo "github.event.repository.fork: ${{ github.event.repository.fork }}"
           echo "github.sha: ${{ github.sha }}"
           echo "github.event.workflow_run.head_sha: ${{ github.event.workflow_run.head_sha }}"
           echo "github.event.workflow_run.head_repository.id: ${{ github.event.workflow_run.head_repository.id }}"
