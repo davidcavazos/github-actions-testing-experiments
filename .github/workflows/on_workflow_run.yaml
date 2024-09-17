@@ -12,9 +12,7 @@ on:
 
 jobs:
   safe-job:
-    if: |
-      github.event.workflow_run.conclusion == 'success'
-      || !github.event.workflow_run.head_repository.fork
+    if: github.event.workflow_run.conclusion == 'success' || !github.event.workflow_run.head_repository.fork
     name: Safe workflow ${{ github.head_ref || '<main>' }}
     runs-on: ubuntu-latest
     permissions:
@@ -46,18 +44,18 @@ jobs:
           CONTEXT_EVENT: ${{ toJson(github.event) }}
           CONTEXT_GITHUB: ${{ toJson(github) }}
 
-      - name: Remove 'allow' label
-        uses: actions/github-script@v7
-        with:
-          script: |
-            // Get the number at the end of the content URL (should be the issue / PR number).
-            const issue_num = context.payload.project_card.content_url.split('/').pop()
-            github.rest.issues.removeLabel({
-              issue_number: issue_num,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: ["allow"]
-            });
+      # - name: Remove 'force-run' label
+      #   uses: actions/github-script@v7
+      #   with:
+      #     script: |
+      #       // Get the number at the end of the content URL (should be the issue / PR number).
+      #       const issue_num = context.payload.project_card.content_url.split('/').pop()
+      #       github.rest.issues.removeLabel({
+      #         issue_number: issue_num,
+      #         owner: context.repo.owner,
+      #         repo: context.repo.repo,
+      #         name: ["force-run"]
+      #       });
 
       - name: Create job status
         uses: actions/github-script@v7
@@ -75,12 +73,12 @@ jobs:
                 context: "${{ env.CHECK_NAME }}",
             });
 
-      - if: github.event.workflow_run.head_repository.fork && github.event.workflow_run.event.label.name != 'allow'
+      - if: github.event.workflow_run.event.label.name != 'force-run' && github.event.workflow_run.head_repository.fork
         name: Block if not allowed
         uses: actions/github-script@v7
         with:
           script: |
-            const error = "Job not allowed, please add the 'allow' label."
+            const error = "Job not allowed, please add the 'force-run' label."
             await github.rest.repos.createCommitStatus({
                 owner: "${{ github.repository_owner }}",
                 repo: "${{ github.event.repository.name }}",
