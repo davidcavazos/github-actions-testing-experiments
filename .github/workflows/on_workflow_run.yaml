@@ -56,16 +56,16 @@ jobs:
       - name: Remove 'force-run' label
         uses: actions/github-script@v7
         with:
+          # https://octokit.github.io/rest.js/v21/#repos-list-pull-requests-associated-with-commit
+          # // Get the number at the end of the content URL (should be the issue / PR number).
+          # const issue_num = context.payload.project_card.content_url.split('/').pop()
+          # github.rest.issues.removeLabel({
+          #   issue_number: issue_num,
+          #   owner: context.repo.owner,
+          #   repo: context.repo.repo,
+          #   name: ["force-run"]
+          # });
           script: |
-            # https://octokit.github.io/rest.js/v21/#repos-list-pull-requests-associated-with-commit
-            # // Get the number at the end of the content URL (should be the issue / PR number).
-            # const issue_num = context.payload.project_card.content_url.split('/').pop()
-            # github.rest.issues.removeLabel({
-            #   issue_number: issue_num,
-            #   owner: context.repo.owner,
-            #   repo: context.repo.repo,
-            #   name: ["force-run"]
-            # });
             console.log("Hello")
             const response = await github.rest.repos.listPullRequestsAssociatedWithCommit({
               owner: "${{ github.repository_owner }}",
