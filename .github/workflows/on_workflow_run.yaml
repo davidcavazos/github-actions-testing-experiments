@@ -71,7 +71,7 @@ jobs:
             const response = await github.rest.repos.listPullRequestsAssociatedWithCommit({
               owner: "${{ github.repository_owner }}",
               repo: "${{ github.event.repository.name }}",
-              commit_sha: "${{ env.COMMIT_SHA }}",
+              commit_sha: "${{ github.event.workflow_run.head_branch }}",
             });
             console.log(JSON.stringify(response))
 
