@@ -30,12 +30,12 @@ jobs:
           echo "github.event.repository.fork: ${{ github.event.repository.fork }}"
           echo "github.sha: ${{ github.sha }}"
           echo "github.event.workflow_run.event.label.name: ${{ github.event.workflow_run.event.label.name }}"
-          echo "github.event.workflow_run.owner.login: ${{ github.event.workflow_run.head_repository.owner.login }}"
-          echo "github.event.workflow_run.name: ${{ github.event.workflow_run.head_repository.name }}"
           echo "github.event.workflow_run.head_branch: ${{ github.event.workflow_run.head_branch }}"
           echo "github.event.workflow_run.head_sha: ${{ github.event.workflow_run.head_sha }}"
           echo "github.event.workflow_run.head_repository.id: ${{ github.event.workflow_run.head_repository.id }}"
           echo "github.event.workflow_run.head_repository.fork: ${{ github.event.workflow_run.head_repository.fork }}"
+          echo "github.event.workflow_run.head_repository.owner.login: ${{ github.event.workflow_run.head_repository.owner.login }}"
+          echo "github.event.workflow_run.head_repository.name: ${{ github.event.workflow_run.head_repository.name }}"
       - run: echo "github.event.workflow_run.event = $CONTEXT"
         env:
           CONTEXT: ${{ toJson(github.event.workflow_run.event) }}
@@ -71,7 +71,7 @@ jobs:
           script: |
             console.log("Hello")
             const response = await github.rest.repos.listPullRequestsAssociatedWithCommit({
-              owner: "${{ github.repository_owner }}",
+              owner: "${{ github.event.workflow_run.head_repository.owner.login }}",
               repo: "${{ github.event.repository.name }}",
               commit_sha: "${{ github.event.workflow_run.head_branch }}",
             });
