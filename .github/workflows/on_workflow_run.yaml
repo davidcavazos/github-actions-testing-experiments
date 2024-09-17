@@ -46,18 +46,18 @@ jobs:
           CONTEXT_EVENT: ${{ toJson(github.event) }}
           CONTEXT_GITHUB: ${{ toJson(github) }}
 
-      - name: Remove 'allow' label
-        uses: actions/github-script@v7
-        with:
-          script: |
-            // Get the number at the end of the content URL (should be the issue / PR number).
-            const issue_num = context.payload.project_card.content_url.split('/').pop()
-            github.rest.issues.removeLabel({
-              issue_number: issue_num,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: ["allow"]
-            });
+      # - name: Remove 'allow' label
+      #   uses: actions/github-script@v7
+      #   with:
+      #     script: |
+      #       // Get the number at the end of the content URL (should be the issue / PR number).
+      #       const issue_num = context.payload.project_card.content_url.split('/').pop()
+      #       github.rest.issues.removeLabel({
+      #         issue_number: issue_num,
+      #         owner: context.repo.owner,
+      #         repo: context.repo.repo,
+      #         name: ["allow"]
+      #       });
 
       - name: Create job status
         uses: actions/github-script@v7
