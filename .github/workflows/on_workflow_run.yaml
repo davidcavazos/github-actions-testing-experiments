@@ -64,13 +64,13 @@ jobs:
           #   owner: context.repo.owner,
           #   repo: context.repo.repo,
           #   name: ["force-run"]
-          # });
+            # });
           script: |
             console.log("Hello")
             const response = await github.rest.repos.listPullRequestsAssociatedWithCommit({
               owner: "${{ github.repository_owner }}",
               repo: "${{ github.event.repository.name }}",
-              sha: "${{ env.COMMIT_SHA }}",
+              commit_sha: "${{ env.COMMIT_SHA }}",
             });
             console.log(JSON.stringify(response))
 
