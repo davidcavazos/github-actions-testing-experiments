@@ -32,16 +32,20 @@ jobs:
           echo "github.event.workflow_run.head_sha: ${{ github.event.workflow_run.head_sha }}"
           echo "github.event.workflow_run.head_repository.id: ${{ github.event.workflow_run.head_repository.id }}"
           echo "github.event.workflow_run.head_repository.fork: ${{ github.event.workflow_run.head_repository.fork }}"
-          echo "github.event.workflow_run.head_repository: $CONTEXT_HEAD_REPOSITORY"
-          echo "github.event.workflow_run = $CONTEXT_WORKFLOW_RUN"
-          echo "github.event.repository = $CONTEXT_REPOSITORY"
-          echo "github.event = $CONTEXT_EVENT"
-          echo "github = $CONTEXT_GITHUB"
+      - run: echo "github.event.workflow_run.head_repository = $CONTEXT_HEAD_REPOSITORY"
         env:
           CONTEXT_HEAD_REPOSITORY: ${{ toJson(github.event.workflow_run.head_repository) }}
+      - run: echo "github.event.workflow_run = $CONTEXT_WORKFLOW_RUN"
+        env:
           CONTEXT_WORKFLOW_RUN: ${{ toJson(github.event.workflow_run) }}
+      - run: echo "github.event.repository = $CONTEXT_REPOSITORY"
+        env:
           CONTEXT_REPOSITORY: ${{ toJson(github.event.repository) }}
+      - run: echo "github.event = $CONTEXT_EVENT"
+        env:
           CONTEXT_EVENT: ${{ toJson(github.event) }}
+      - run: echo "github = $CONTEXT_GITHUB"
+        env:
           CONTEXT_GITHUB: ${{ toJson(github) }}
 
       # - name: Remove 'force-run' label
