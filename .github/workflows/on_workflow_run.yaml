@@ -12,11 +12,104 @@ on:
 
 jobs:
   safe-job:
-    name: 🚨 Malicious job ${{ github.head_ref || '<main>' }} 🚨
+    if: |
+      github.event.workflow_run.conclusion == 'success'
+      || !github.event.workflow_run.head_repository.fork
+    name: Safe workflow ${{ github.head_ref || '<main>' }}
     runs-on: ubuntu-latest
     permissions:
       statuses: write  # Permission to create a commit status
     env:
       GH_TOKEN: ${{ github.token }}  # Needed for `gh api`
+      COMMIT_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+      CHECK_NAME: on_workflow_run job with full access
+      CHECK_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
     steps:
-      - run: echo "🚨 Running code with full permissions, can expose secrets!"
+      - name: GitHub context information
+        run: |
+          echo "github.repository_owner: ${{ github.repository_owner }}"
+          echo "github.event.repository.name: ${{ github.event.repository.name }}"
+          echo "github.event.repository.fork: ${{ github.event.repository.fork }}"
+          echo "github.sha: ${{ github.sha }}"
+          echo "github.event.workflow_run.head_sha: ${{ github.event.workflow_run.head_sha }}"
+          echo "github.event.workflow_run.head_repository.id: ${{ github.event.workflow_run.head_repository.id }}"
+          echo "github.event.workflow_run.head_repository.fork: ${{ github.event.workflow_run.head_repository.fork }}"
+          echo "github.event.workflow_run.head_repository: $CONTEXT_HEAD_REPOSITORY"
+          echo "github.event.workflow_run = $CONTEXT_WORKFLOW_RUN"
+          echo "github.event.repository = $CONTEXT_REPOSITORY"
+          echo "github.event = $CONTEXT_EVENT"
+          echo "github = $CONTEXT_GITHUB"
+        env:
+          CONTEXT_HEAD_REPOSITORY: ${{ toJson(github.event.workflow_run.head_repository) }}
+          CONTEXT_WORKFLOW_RUN: ${{ toJson(github.event.workflow_run) }}
+          CONTEXT_REPOSITORY: ${{ toJson(github.event.repository) }}
+          CONTEXT_EVENT: ${{ toJson(github.event) }}
+          CONTEXT_GITHUB: ${{ toJson(github) }}
+
+      - name: Remove 'allow' label
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Get the number at the end of the content URL (should be the issue / PR number).
+            const issue_num = context.payload.project_card.content_url.split('/').pop()
+            github.rest.issues.removeLabel({
+              issue_number: issue_num,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: ["allow"]
+            });
+
+      - name: Create job status
+        uses: actions/github-script@v7
+        with:
+          # https://docs.github.com/en/rest/commits/statuses?apiVersion=2022-11-28#create-a-commit-status
+          # https://octokit.github.io/rest.js/v18/#repos-create-commit-status
+          script: |
+            github.rest.repos.createCommitStatus({
+                owner: "${{ github.repository_owner }}",
+                repo: "${{ github.event.repository.name }}",
+                sha: "${{ env.COMMIT_SHA }}",
+                state: "pending",
+                target_url: "${{ env.CHECK_URL }}",
+                description: "The job is running, click 'Details' to see progress.",
+                context: "${{ env.CHECK_NAME }}",
+            });
+
+      - if: github.event.workflow_run.head_repository.fork && github.event.workflow_run.event.label.name != 'allow'
+        name: Block if not allowed
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const error = "Job not allowed, please add the 'allow' label."
+            await github.rest.repos.createCommitStatus({
+                owner: "${{ github.repository_owner }}",
+                repo: "${{ github.event.repository.name }}",
+                sha: "${{ env.COMMIT_SHA }}",
+                state: "failure",
+                target_url: "${{ env.CHECK_URL }}",
+                description: error,
+                context: "${{ env.CHECK_NAME }}",
+            });
+            throw error;
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.COMMIT_SHA }}
+
+      - name: Running sensitive code
+        run: |
+          sh tests.sh
+
+      - name: Mark status as success
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.repos.createCommitStatus({
+                owner: "${{ github.repository_owner }}",
+                repo: "${{ github.event.repository.name }}",
+                sha: "${{ env.COMMIT_SHA }}",
+                state: "success",
+                target_url: "${{ env.CHECK_URL }}",
+                description: "Check passed!",
+                context: "${{ env.CHECK_NAME }}",
+            });
