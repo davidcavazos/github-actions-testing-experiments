@@ -73,13 +73,18 @@ jobs:
               commit_sha: "${{ env.COMMIT_SHA }}",
             });
 
-            for (const pr of response.data) {
-              console.log(`PR #${pr.number} fork=${pr.head.repo.fork}`)
+            if (!response.data) {
+              console.log(`No pull requests associated with commit ${{ env.COMMIT_SHA }}`)
+            }
 
-              // https://docs.github.com/en/rest/issues/labels?apiVersion=2022-11-28#remove-a-label-from-an-issue
-              // https://octokit.github.io/rest.js/v21/#issues-remove-label
+            // Typically, there's only one pull request associated with a commit.
+            // As long as one pull request has the label, we can trust it's approved.
+            const allowed = response.data.some(pr => {
+              console.log(`Found PR #${pr.number}, fork=${pr.head.repo.fork}`)
               const labels = pr.labels.flatMap(label => label.name);
               if (labels.includes(label)) {
+                // https://docs.github.com/en/rest/issues/labels?apiVersion=2022-11-28#remove-a-label-from-an-issue
+                // https://octokit.github.io/rest.js/v21/#issues-remove-label
                 console.log(`  ✅ Allowed, removing label '${label}'`)
                 github.rest.issues.removeLabel({
                   issue_number: pr.number,
@@ -87,37 +92,35 @@ jobs:
                   repo: "${{ github.event.repository.name }}",
                   name: [label],
                 });
-              } else if (pr.head.repo.fork) {
-                // https://docs.github.com/en/rest/commits/statuses?apiVersion=2022-11-28#create-a-commit-status
-                // https://octokit.github.io/rest.js/v21/#repos-create-commit-status
-                console.log(`  ❌ Blocked, label '${label}' not found`)
-                const error = `Job not allowed, please add the '${label}' label.`
-                await github.rest.repos.createCommitStatus({
-                    owner: "${{ github.repository_owner }}",
-                    repo: "${{ github.event.repository.name }}",
-                    sha: "${{ env.COMMIT_SHA }}",
-                    state: "failure",
-                    target_url: "${{ env.CHECK_URL }}",
-                    description: error,
-                    context: "${{ env.CHECK_NAME }}",
-                });
-                throw error;
-              } else {
+                return true;
+              if (!pr.head.repo.fork) {
                 console.log(`  ✅ Allowed (not from forked repository)`)
+                return true;
               }
+              console.log(`  ❌ Blocked, label '${label}' not found`)
+              return false;
+            })
 
-              // https://docs.github.com/en/rest/commits/statuses?apiVersion=2022-11-28#create-a-commit-status
-              // https://octokit.github.io/rest.js/v21/#repos-create-commit-status
-              console.log(`  Creating status as 'pending'`)
-              github.rest.repos.createCommitStatus({
-                  owner: "${{ github.repository_owner }}",
-                  repo: "${{ github.event.repository.name }}",
-                  sha: "${{ env.COMMIT_SHA }}",
-                  state: "pending",
-                  target_url: "${{ env.CHECK_URL }}",
-                  description: "The job is running, click 'Details' to see progress.",
-                  context: "${{ env.CHECK_NAME }}",
-              });
+            const state = allowed ? "pending" : "failure";
+            const description = allowed
+              ? "The job is running, click 'Details' to see progress."
+              : "Job not allowed, please add the '${label}' label.";
+
+            // https://docs.github.com/en/rest/commits/statuses?apiVersion=2022-11-28#create-a-commit-status
+            // https://octokit.github.io/rest.js/v21/#repos-create-commit-status
+            console.log(`Creating status check as '${state}'`)
+            github.rest.repos.createCommitStatus({
+                owner: "${{ github.repository_owner }}",
+                repo: "${{ github.event.repository.name }}",
+                sha: "${{ env.COMMIT_SHA }}",
+                state: state,
+                target_url: "${{ env.CHECK_URL }}",
+                description: description,
+                context: "${{ env.CHECK_NAME }}",
+            });
+
+            if (!allowed) {
+              throw `❌ ${description}`
             }
 
       - uses: actions/checkout@v4
