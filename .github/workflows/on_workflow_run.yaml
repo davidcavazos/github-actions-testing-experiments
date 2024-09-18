@@ -21,7 +21,6 @@ jobs:
       pull-requests: write  # Permission to remove a label
       statuses: write       # Permission to create a commit status
     env:
-      GH_TOKEN: ${{ github.token }}  # Needed for `gh api`
       COMMIT_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
       CHECK_NAME: on_workflow_run job with full access
       CHECK_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
