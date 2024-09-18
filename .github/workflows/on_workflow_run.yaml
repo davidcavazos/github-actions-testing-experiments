@@ -70,12 +70,19 @@ jobs:
 
             for (const pr of response.data) {
               const labels = pr.labels.flatMap(label => label.name);
+              console.log(JSON.stringify(labels), labels.includes(label));
+              console.log({
+                  issue_number: pr.number,
+                  owner: pr.head.repo.owner.login,
+                  repo: pr.head.repo.name,
+                  name: [label],
+              });
               if (labels.includes(label)) {
                 github.rest.issues.removeLabel({
                   issue_number: pr.number,
                   owner: pr.head.repo.owner.login,
                   repo: pr.head.repo.name,
-                  name: [label]
+                  name: [label],
                 });
               }
 
