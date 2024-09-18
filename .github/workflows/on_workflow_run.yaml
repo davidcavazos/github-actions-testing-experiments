@@ -16,7 +16,10 @@ jobs:
     name: Safe workflow ${{ github.head_ref || '<main>' }}
     runs-on: ubuntu-latest
     permissions:
-      statuses: write  # Permission to create a commit status
+      # https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/controlling-permissions-for-github_token
+      issues: write         # Permission to remove a label
+      pull-requests: write  # Permission to remove a label
+      statuses: write       # Permission to create a commit status
     env:
       GH_TOKEN: ${{ github.token }}  # Needed for `gh api`
       COMMIT_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
