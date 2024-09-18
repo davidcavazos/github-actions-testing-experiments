@@ -29,9 +29,9 @@ jobs:
           CONTEXT_EVENT: ${{ toJson(github.event) }}
           CONTEXT_GITHUB: ${{ toJson(github) }}
 
-      - if: github.event.label.name == 'force-run' || !github.event.repository.fork
+      - if: github.event.label.name == 'force-run' || !github.event.pull_request.head.repo.fork
         run: echo "✅ Running job with full permissions"
-      - if: github.event.label.name != 'force-run' && github.event.repository.fork
+      - if: github.event.label.name != 'force-run' && github.event.pull_request.head.repo.fork
         run: |
           echo "❌ Please add the 'force-run' label"
           false

@@ -61,7 +61,6 @@ jobs:
       - name: Authorizing
         uses: actions/github-script@v7
         with:
-          # https://octokit.github.io/rest.js/v21/#repos-list-pull-requests-associated-with-commit
           script: |
             const label = 'force-run';
 
@@ -118,7 +117,7 @@ jobs:
             });
 
             if (!allowed) {
-              throw `❌ ${description}`
+              throw `❌ ${description}`;
             }
 
       - uses: actions/checkout@v4
