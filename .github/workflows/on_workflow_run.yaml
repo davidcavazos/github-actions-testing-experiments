@@ -22,6 +22,7 @@ jobs:
       statuses: write       # Permission to create a commit status
     env:
       COMMIT_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+      OWNER: ${{ github.event.workflow_run.head_repository.owner.login || github.repository_owner }}
       CHECK_NAME: on_workflow_run job with full access
       CHECK_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
     steps:
@@ -67,9 +68,9 @@ jobs:
             // https://docs.github.com/en/rest/commits/commits?apiVersion=2022-11-28#list-pull-requests-associated-with-a-commit
             // https://octokit.github.io/rest.js/v21/#repos-list-pull-requests-associated-with-commit
             const response = await github.rest.repos.listPullRequestsAssociatedWithCommit({
-              owner: "${{ github.event.workflow_run.head_repository.owner.login }}",
+              owner: "${{ env.OWNER }}",
               repo: "${{ github.event.repository.name }}",
-              commit_sha: "${{ github.event.workflow_run.head_branch }}",
+              commit_sha: "${{ env.COMMIT_SHA }}",
             });
 
             for (const pr of response.data) {
