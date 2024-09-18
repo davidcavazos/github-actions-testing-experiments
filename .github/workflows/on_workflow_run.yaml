@@ -93,13 +93,14 @@ jobs:
                   name: [label],
                 });
                 return true;
+              }
               if (!pr.head.repo.fork) {
                 console.log(`  ✅ Allowed (not from forked repository)`)
                 return true;
               }
-              console.log(`  ❌ Blocked, label '${label}' not found`)
+              console.log(`  ❌ Blocked, label '${label}' not found in forked repository`)
               return false;
-            })
+            });
 
             const state = allowed ? "pending" : "failure";
             const description = allowed
