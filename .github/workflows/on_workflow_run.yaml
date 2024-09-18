@@ -110,8 +110,8 @@ jobs:
                 owner: "${{ github.repository_owner }}",
                 repo: "${{ github.event.repository.name }}",
                 sha: "${{ env.COMMIT_SHA }}",
-                state: state,
                 target_url: "${{ env.CHECK_URL }}",
+                state: state,
                 description: description,
                 context: "${{ env.CHECK_NAME }}",
             });
@@ -128,13 +128,16 @@ jobs:
         id: test
         run: |
           START=$(date +%s)
-          sh tests.sh
-          STATUS=$?
+          if sh tests.sh; then
+            STATE="success"
+          else
+            STATE="failure"
+          fi
           END=$(date +%s)
           ELAPSED=$(echo "$START - $END" | bc)
           echo "Successful in ${ELAPSED}s"
           echo "elapsed=$ELAPSED" >> "$GITHUB_OUTPUT"
-          echo "status=$STATUS" >> "$GITHUB_OUTPUT"
+          echo "state=$STATE" >> "$GITHUB_OUTPUT"
 
       - name: Report check status
         uses: actions/github-script@v7
@@ -142,13 +145,14 @@ jobs:
           script: |
             // https://docs.github.com/en/rest/commits/statuses?apiVersion=2022-11-28#create-a-commit-status
             // https://octokit.github.io/rest.js/v21/#repos-create-commit-status
+            const state = "${{ steps.test.outputs.state }}";
             github.rest.repos.createCommitStatus({
                 owner: "${{ github.repository_owner }}",
                 repo: "${{ github.event.repository.name }}",
                 sha: "${{ env.COMMIT_SHA }}",
-                state: ${{ steps.test.outputs.status }} === "0" ? "success" : "failure",
                 target_url: "${{ env.CHECK_URL }}",
-                description: ${{ steps.test.outputs.status }} === "0"
+                state: state,
+                description: state === "success"
                   ? "Successful in ${{ steps.test.outputs.elapsed }}s"
                   : "Failed in ${{ steps.test.outputs.elapsed }}s",
                 context: "${{ env.CHECK_NAME }}",
