@@ -130,7 +130,7 @@ jobs:
           sh tests.sh
           END=$(date +%s)
           ELAPSED=$(echo "$START - $END" | bc)
-          echo "elapsed=$ELAPSED"
+          echo "Successful in ${ELAPSED}s"
           echo "elapsed=$ELAPSED" >> "$GITHUB_OUTPUT"
 
       - name: Mark status as success
