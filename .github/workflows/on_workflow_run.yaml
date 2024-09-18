@@ -77,8 +77,8 @@ jobs:
             // As long as one pull request has the label, we can trust it's approved.
             const isPushToMain = ${{ !github.event.workflow_run.head_sha }};
             const allowed = response.data.some(pr => {
-              console.log(`Found PR #${pr.number}, fork=${pr.head.repo.fork}`)
               const labels = pr.labels.flatMap(label => label.name);
+              console.log(`Found PR #${pr.number}, fork=${pr.head.repo.fork}, labels=${JSON.stringify(labels)}`)
               if (labels.includes(label)) {
                 // https://docs.github.com/en/rest/issues/labels?apiVersion=2022-11-28#remove-a-label-from-an-issue
                 // https://octokit.github.io/rest.js/v21/#issues-remove-label
