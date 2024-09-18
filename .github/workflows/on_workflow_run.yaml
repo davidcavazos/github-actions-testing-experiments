@@ -73,12 +73,9 @@ jobs:
               commit_sha: "${{ env.COMMIT_SHA }}",
             });
 
-            if (!response.data) {
-              console.log(`No pull requests associated with commit ${{ env.COMMIT_SHA }}`)
-            }
-
             // Typically, there's only one pull request associated with a commit.
             // As long as one pull request has the label, we can trust it's approved.
+            const isPushToMain = ${{ !github.event.workflow_run.head_sha }};
             const allowed = response.data.some(pr => {
               console.log(`Found PR #${pr.number}, fork=${pr.head.repo.fork}`)
               const labels = pr.labels.flatMap(label => label.name);
@@ -100,7 +97,7 @@ jobs:
               }
               console.log(`  ❌ Blocked, label '${label}' not found in forked repository`)
               return false;
-            });
+            }) || isPushToMain;
 
             const state = allowed ? "pending" : "failure";
             const description = allowed
