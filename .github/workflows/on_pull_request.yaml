@@ -34,5 +34,4 @@ jobs:
       - if: github.event.label.name != 'force-run' && github.event.pull_request.head.repo.fork
         run: |
           echo "❌ Please add the 'force-run' label"
-          echo "❌ Please add the 'force-run' label" > $GITHUB_STEP_SUMMARY
           false
