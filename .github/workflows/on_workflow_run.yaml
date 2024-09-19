@@ -157,6 +157,6 @@ jobs:
                   : "Failed in ${{ steps.test.outputs.elapsed }}s",
                 context: "${{ env.CHECK_NAME }}",
             });
-            if (status !== "success") {
+            if (state !== "success") {
               throw "Failed in ${{ steps.test.outputs.elapsed }}s"
             }
