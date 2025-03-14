@@ -11,11 +11,9 @@ jobs:
   affected:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
-    env:
-      COMMIT_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
-      OWNER: ${{ github.event.workflow_run.head_repository.owner.login || github.repository_owner }}
-      CHECK_NAME: on_workflow_run job with full access
-      CHECK_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    outputs:
+      paths: ${{ steps.custard.outputs.paths }}
+      ci-setups: ${{ steps.custard.outputs.ci-setups }}
     steps:
       - name: Load inputs
         uses: davidcavazos/github-actions-testing-experiments/.github/load-inputs@main
@@ -23,54 +21,13 @@ jobs:
         with:
           run-id: ${{ github.event.workflow_run.id }}
 
-      - name: Setup Go
-        uses: actions/setup-go@f111f3307d8850f501ac008e886eec1fd1932a34 # v5
-        with:
-          # go-version: ${{ inputs.go-version }}
-          go-version: ^1.22.0
-      - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-        with:
-          repository: GoogleCloudPlatform/cloud-samples-tools
-          # ref: ${{ inputs.custard-version }}
-          ref: v0.2.1
-          path: cloud-samples-tools
-      - name: Install Custard
-        run: go install ./cmd/custard
-        working-directory: cloud-samples-tools/custard
-      - name: Clean up the workspace
-        run: rm -rf cloud-samples-tools
-
-      # Find the affected packages.
-      - name: Checkout the commit history
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-        with:
-          ref: ${{ steps.inputs.outputs.commit-head }}
-          fetch-depth: 0 # fetch the entire branch history to find diffs
-      - name: Get diffs from main and the PR
-        run: |
-          if [[ -n "$PATHS" ]]; then
-            # If paths are explicitly provided, use them.
-            echo "$PATHS" \
-              | sed 's/ *, */\n/g' \
-              | sed 's/$/\/diff/' \
-              | tee diffs.txt
-          else
-            # Otherwise, use git diff.
-            git --no-pager diff --name-only $HEAD $MAIN \
-              | tee diffs.txt
-          fi
-        env:
-          HEAD: ${{ steps.inputs.outputs.commit-head }}
-          MAIN: ${{ steps.inputs.outputs.commit-main }}
-          # PATHS: ${{ inputs.paths }}
-          PATHS: ""
       - name: Find affected packages
+        uses: davidcavazos/github-actions-testing-experiments/.github/affected@main
         id: custard
-        run: |
-          echo "paths=$(custard affected ${{ inputs.config-file }} diffs.txt paths.txt)" >> $GITHUB_OUTPUT
-          cat paths.txt
-          echo "ci-setups=$(custard setup-files ${{ inputs.config-file }} paths.txt)" >> $GITHUB_OUTPUT
+        with:
+          config-file: .github/config.jsonc
+          commit-head: ${{ steps.inputs.outputs.commit-head }}
+          commit-main: ${{ steps.inputs.outputs.commit-main }}
 
   test:
     needs: affected
@@ -83,6 +40,10 @@ jobs:
       CHECK_NAME: on_workflow_run job with full access
       CHECK_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
     steps:
+      - run: echo $AFFECTED
+        env:
+          AFFECTED: ${{ toJson(needs.affected.outputs) }}
+
       - name: GitHub context information
         run: |
           echo "github.repository_owner: ${{ github.repository_owner }}"

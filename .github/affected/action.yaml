@@ -26,6 +26,15 @@ inputs:
     description: Timeout to find affected packages.
     default: "2"
 
+outputs:
+  paths:
+    description: The affected paths as a JSON list.
+    value: ${{ steps.custard.outputs.paths }}
+  ci-setups:
+    description: The CI setup configurations for the affected packages.
+    value: ${{ steps.custard.outputs.ci-setups }}
+
+
 runs:
   using: composite
   steps:
