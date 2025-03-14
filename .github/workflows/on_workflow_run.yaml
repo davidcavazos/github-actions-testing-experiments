@@ -70,9 +70,10 @@ jobs:
       #       });
       #       fs.writeFileSync('inputs.zip', Buffer.from(download.data));
       - name: Download inputs artifact
-        id: artifact
         uses: actions/download-artifact@v4
+        id: artifact
         with:
+          run-id: ${{ github.event.workflow_run.id }}
           name: inputs
       - name: Unzip inputs artifact
         id: inputs
