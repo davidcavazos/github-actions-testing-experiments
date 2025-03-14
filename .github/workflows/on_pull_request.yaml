@@ -31,9 +31,11 @@ jobs:
       - name: Save job inputs
         run: |
           mkdir -p artifact/
-          echo "${{ github.event.number }}" > artifact/pull-request-number
+          echo "${{ github.event.number }}" | tee artifact/pull-request-number
+          echo "${{ github.event.before }}" | tee artifact/sha-before
+          echo "${{ github.event.after }}" | tee artifact/sha-after
       - name: Upload inputs artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.event.pull_request.head.sha || github.event.head_commit.id }}
+          name: ${{ github.event.pull_request.head.sha || github.event.after }}
           path: artifact/
