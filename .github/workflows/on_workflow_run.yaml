@@ -49,37 +49,44 @@ jobs:
         env:
           CONTEXT: ${{ toJson(github) }}
 
+      # - name: Download inputs artifact
+      #   uses: actions/github-script@v7
+      #   with:
+      #     script: |
+      #       const fs = require('fs');
+      #       const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+      #          owner: context.repo.owner,
+      #          repo: context.repo.repo,
+      #          run_id: context.payload.workflow_run.id,
+      #       });
+      #       const artifact = artifacts.data.artifacts.filter((artifact) => {
+      #         return artifact.name == "inputs"
+      #       })[0];
+      #       const download = await github.rest.actions.downloadArtifact({
+      #          owner: context.repo.owner,
+      #          repo: context.repo.repo,
+      #          artifact_id: artifact.id,
+      #          archive_format: 'zip',
+      #       });
+      #       fs.writeFileSync('inputs.zip', Buffer.from(download.data));
       - name: Download inputs artifact
-        uses: actions/github-script@v7
+        id: artifact
+        uses: actions/download-artifact@v4
         with:
-          script: |
-            const fs = require('fs');
-            const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
-               owner: context.repo.owner,
-               repo: context.repo.repo,
-               run_id: context.payload.workflow_run.id,
-            });
-            const artifact = artifacts.data.artifacts.filter((artifact) => {
-              return artifact.name == "inputs"
-            })[0];
-            const download = await github.rest.actions.downloadArtifact({
-               owner: context.repo.owner,
-               repo: context.repo.repo,
-               artifact_id: artifact.id,
-               archive_format: 'zip',
-            });
-            fs.writeFileSync('inputs.zip', Buffer.from(download.data));
+          name: inputs
       - name: Unzip inputs artifact
         id: inputs
         run: |
-          unzip inputs.zip
-          echo "pull-request-number=$(cat pull-request-number)" | tee -a "$GITHUB_OUTPUT"
-          echo "sha-before=$(cat sha-before)" | tee -a "$GITHUB_OUTPUT"
-          echo "sha-after=$(cat sha-after)" | tee -a "$GITHUB_OUTPUT"
+          ls -lh ${{ env.ARTIFACT }}
+          echo "pull-request-number=$(cat ${{ env.ARTIFACT }}/pull-request-number)" | tee -a "$GITHUB_OUTPUT"
+          echo "sha-before=$(cat ${{ env.ARTIFACT }}/sha-before)" | tee -a "$GITHUB_OUTPUT"
+          echo "sha-after=$(cat ${{ env.ARTIFACT }}/sha-after)" | tee -a "$GITHUB_OUTPUT"
+        env:
+          ARTIFACT: ${{ steps.artifact.outputs.download-path }}
       - run: |
-          echo ${{ steps.inputs.outputs.pull-request-number }}
-          echo ${{ steps.inputs.outputs.sha-before }}
-          echo ${{ steps.inputs.outputs.sha-after }}
+          echo "pull-request-number: ${{ steps.inputs.outputs.pull-request-number }}"
+          echo "sha-before: ${{ steps.inputs.outputs.sha-before }}"
+          echo "sha-after: ${{ steps.inputs.outputs.sha-after }}"
 
       # - name: 'Comment on PR'
       #   uses: actions/github-script@v7
