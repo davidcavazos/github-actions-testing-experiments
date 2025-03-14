@@ -28,7 +28,5 @@ jobs:
       - run: 'echo "github.event.pull_request.head.sha: ${{ github.event.pull_request.head.sha }}"'
       - run: 'echo "github.event.head_commit.id: ${{ github.event.head_commit.id }}"'
 
-      - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       - name: Save inputs
-        uses: ./.github/save-inputs
+        uses: davidcavazos/github-actions-testing-experiments/.github/save-inputs@main
