@@ -1,0 +1,38 @@
+name: Load inputs
+description: Loads the inputs for the workflow.
+
+inputs:
+  run-id:
+    description: Run ID of the workflow that created the inputs artifact.
+    required: true
+  name:
+    description: Artifact name.
+    default: inputs
+
+outputs:
+  pull-request-number:
+    description: Pull request number.
+    value: ${{ steps.vars.outputs.pull-request-number }}
+  commit-main:
+    description: Commit SHA of the main branch.
+    value: ${{ steps.vars.outputs.commit-main }}
+  commit-head:
+    description: Commit SHA of the head branch.
+    value: ${{ steps.vars.outputs.commit-head }}
+
+runs:
+  using: composite
+  steps:
+    - name: Download inputs artifact
+      uses: actions/download-artifact@v4
+      id: artifact
+      with:
+        github-token: ${{ github.token }}
+        run-id: ${{ inputs.run-id }}
+        name: ${{ inputs.name }}
+    - name: Set inputs
+      id: vars
+      run: |
+        echo "pull-request-number=$(cat ${{ steps.artifact.outputs.download-path }}/pull-request-number)" | tee -a "$GITHUB_OUTPUT"
+        echo "commit-main=$(cat ${{ steps.artifact.outputs.download-path }}/commit-main)" | tee -a "$GITHUB_OUTPUT"
+        echo "commit-head=$(cat ${{ steps.artifact.outputs.download-path }}/commit-head)" | tee -a "$GITHUB_OUTPUT"

@@ -28,15 +28,5 @@ jobs:
       - run: 'echo "github.event.pull_request.head.sha: ${{ github.event.pull_request.head.sha }}"'
       - run: 'echo "github.event.head_commit.id: ${{ github.event.head_commit.id }}"'
 
-      - name: Save job inputs
-        run: |
-          mkdir -p inputs/
-          echo "${{ github.event.number }}" | tee inputs/pull-request-number
-          echo "${{ github.event.before }}" | tee inputs/sha-before
-          echo "${{ github.event.after }}" | tee inputs/sha-after
-      - name: Upload inputs artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: inputs
-          path: inputs/
-          retention-days: 1
+      - name: Save inputs
+        uses: ./.github/save-inputs

@@ -1,0 +1,27 @@
+name: Save inputs
+description: Saves the inputs for the workflow.
+
+inputs:
+  name:
+    description: Artifact name.
+    default: inputs
+  retention-days:
+    description: Number of days to keep the artifact.
+    default: "1"
+
+runs:
+  using: composite
+  steps:
+    - name: Save job inputs
+      run: |
+        mkdir -p inputs/
+        echo "${{ github.event.number }}" | tee inputs/pull-request-number
+        echo "${{ github.event.before }}" | tee inputs/commit-main
+        echo "${{ github.event.after }}" | tee inputs/commit-head
+    - name: Upload inputs artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.name }}
+        path: inputs/
+        retention-days: ${{ inputs.retention-days }}
+
