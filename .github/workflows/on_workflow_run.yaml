@@ -50,7 +50,6 @@ jobs:
           CONTEXT: ${{ toJson(github) }}
 
       - name: Download inputs artifact
-        if: github.event.workflow_run.head_sha
         uses: actions/github-script@v7
         with:
           script: |
@@ -61,7 +60,7 @@ jobs:
                run_id: context.payload.workflow_run.id,
             });
             const artifact = artifacts.data.artifacts.filter((artifact) => {
-              return artifact.name == "${{ github.event.workflow_run.head_sha }}"
+              return artifact.name == "inputs"
             })[0];
             const download = await github.rest.actions.downloadArtifact({
                owner: context.repo.owner,
@@ -71,12 +70,16 @@ jobs:
             });
             fs.writeFileSync('inputs.zip', Buffer.from(download.data));
       - name: Unzip inputs artifact
-        if: github.event.workflow_run.head_sha
+        id: inputs
         run: |
           unzip inputs.zip
-          ls -lh
-          ls -lh inputs
-          cat inputs/*
+          echo "pull-request-number=$(cat pull-request-number)" | tee -a "$GITHUB_OUTPUT"
+          echo "sha-before=$(cat sha-before)" | tee -a "$GITHUB_OUTPUT"
+          echo "sha-after=$(cat sha-after)" | tee -a "$GITHUB_OUTPUT"
+      - run: |
+          echo ${{ steps.inputs.outputs.pull-request-number }}
+          echo ${{ steps.inputs.outputs.sha-before }}
+          echo ${{ steps.inputs.outputs.sha-after }}
 
       # - name: 'Comment on PR'
       #   uses: actions/github-script@v7
