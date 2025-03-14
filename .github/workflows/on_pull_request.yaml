@@ -1,37 +1,16 @@
 name: on_pull_request
 
 on:
+  push:
+    branches: main
   pull_request:
-    types:
-      - opened
-      - synchronize
-      - reopened
-      - labeled
 
 jobs:
-  authorize:
-    name: Authorizing
-    runs-on: ubuntu-latest
-    steps:
-      - name: GitHub context information
-        run: |
-          echo "github.repository_owner: ${{ github.repository_owner }}"
-          echo "github.event.repository.name: ${{ github.event.repository.name }}"
-          echo "github.event.repository.fork: ${{ github.event.repository.fork }}"
-          echo "github.sha: ${{ github.sha }}"
-          echo "github.event.pull_request = $CONTEXT_PULL_REQUEST"
-          echo "github.event.repository = $CONTEXT_REPOSITORY"
-          echo "github.event = $CONTEXT_EVENT"
-          echo "github = $CONTEXT_GITHUB"
-        env:
-          CONTEXT_PULL_REQUEST: ${{ toJson(github.event.pull_request ) }}
-          CONTEXT_REPOSITORY: ${{ toJson(github.event.repository) }}
-          CONTEXT_EVENT: ${{ toJson(github.event) }}
-          CONTEXT_GITHUB: ${{ toJson(github) }}
-
-      - if: github.event.label.name == 'force-run' || !github.event.pull_request.head.repo.fork
-        run: echo "✅ Running job with full permissions"
-      - if: github.event.label.name != 'force-run' && github.event.pull_request.head.repo.fork
-        run: |
-          echo "❌ Please add the 'force-run' label"
-          false
+  affected:
+    name: Find affected packages
+    # uses: GoogleCloudPlatform/cloud-samples-tools/.github/workflows/find-affected.yaml@main
+    uses: ./.github/workflows/find-affected.yaml
+    with:
+      config-file: .github/config.jsonc
+      paths: pkg
+      artifact-name: ${{ github.event.pull_request.head.sha }}
