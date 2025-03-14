@@ -13,6 +13,7 @@ runs:
   using: composite
   steps:
     - name: Save job inputs
+      shell: bash
       run: |
         mkdir -p inputs/
         echo "${{ github.event.number }}" | tee inputs/pull-request-number

@@ -32,6 +32,7 @@ runs:
         name: ${{ inputs.name }}
     - name: Set inputs
       id: vars
+      shell: bash
       run: |
         echo "pull-request-number=$(cat ${{ steps.artifact.outputs.download-path }}/pull-request-number)" | tee -a "$GITHUB_OUTPUT"
         echo "commit-main=$(cat ${{ steps.artifact.outputs.download-path }}/commit-main)" | tee -a "$GITHUB_OUTPUT"
