@@ -41,9 +41,8 @@ jobs:
       CHECK_NAME: on_workflow_run job with full access
       CHECK_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
     steps:
-      - name: Create check as "pending"
+      - name: Create status check
         uses: actions/github-script@v7
-        if: needs.affected.outputs.pull-request-number
         with:
           script: |
             // https://docs.github.com/en/rest/commits/statuses?apiVersion=2022-11-28#create-a-commit-status
