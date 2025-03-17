@@ -4,7 +4,7 @@ on:
   # workflow_dispatch:
   workflow_run:
     workflows:
-      - on_pull_request
+      - custard CI
     types:
       - completed
 
@@ -34,7 +34,7 @@ jobs:
                 owner: "${{ github.repository_owner }}",
                 repo: "${{ github.event.repository.name }}",
                 head_sha: "${{ github.event.workflow_run.head_sha }}",
-                name: "custard",
+                name: "test",
                 details_url: "${{ env.CHECK_URL }}",
                 status: "in_progress",
                 output: {
@@ -70,13 +70,13 @@ jobs:
                 repo: "${{ github.event.repository.name }}",
                 check_run_id: "${{ steps.check.outputs.result }}",
                 status: "completed",
+                conclusion: "success",
                 output: {
                   title: "Found ${{ steps.custard.outputs.paths.length }} packages",
                   summary: "My summary",
                   text: "My text",
                 },
             });
-            return check.data.id
 
   test:
     needs: affected
