@@ -42,10 +42,8 @@ jobs:
                   text: "My text",
                 },
             });
-            return check;
+            return check.data.id;
       - run: echo "${{ steps.check.outputs.result }}"
-      - run: echo "${{ toJson(steps.check.outputs.result) }}"
-
       - name: Load inputs
         uses: davidcavazos/github-actions-testing-experiments/.github/load-inputs@main
         id: inputs
