@@ -41,6 +41,7 @@ jobs:
                   text: "My text",
                 },
             });
+            console.log(check.data.url);
             return check.data;
 
       - name: Load inputs
