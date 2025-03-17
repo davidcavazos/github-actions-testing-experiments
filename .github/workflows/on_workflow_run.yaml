@@ -50,9 +50,8 @@ jobs:
               run_id: "${{ github.run_id }}",
             });
 
-            console.log(JSON.stringify(jobs.data));
             for (const job of jobs.data.jobs) {
-              console.log(JSON.stringify(job));
+              console.log(JSON.stringify(job, null, 2));
             }
 
             return check.data;
