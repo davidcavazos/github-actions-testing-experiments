@@ -26,9 +26,10 @@ jobs:
         id: check
         uses: actions/github-script@v7
         with:
+          result-encoding: string
           script: |
-            // https://docs.github.com/en/rest/commits/statuses?apiVersion=2022-11-28#create-a-commit-status
-            // https://octokit.github.io/rest.js/v21/#repos-create-commit-status
+            // https://docs.github.com/en/rest/checks/runs?apiVersion=2022-11-28#create-a-check-run
+            // https://octokit.github.io/rest.js/v21/#checks-create
             const check = await github.rest.checks.create({
                 owner: "${{ github.repository_owner }}",
                 repo: "${{ github.event.repository.name }}",
@@ -57,6 +58,25 @@ jobs:
           config-file: .github/config.jsonc
           commit-head: ${{ steps.inputs.outputs.commit-head }}
           commit-main: ${{ steps.inputs.outputs.commit-main }}
+
+      - name: Status completed
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // https://docs.github.com/en/rest/checks/runs?apiVersion=2022-11-28#update-a-check-run
+            // https://octokit.github.io/rest.js/v21/#checks-update
+            github.rest.checks.update({
+                owner: "${{ github.repository_owner }}",
+                repo: "${{ github.event.repository.name }}",
+                check_run_id: "${{ steps.check.outputs.result }}",
+                status: "completed",
+                output: {
+                  title: "Found ${{ steps.custard.outputs.paths.length }} packages",
+                  summary: "My summary",
+                  text: "My text",
+                },
+            });
+            return check.data.id
 
   test:
     needs: affected
