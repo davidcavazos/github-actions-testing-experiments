@@ -38,7 +38,7 @@ jobs:
             for (const job of jobs.data.jobs) {
               console.log(job.name);
               if (job.name == "affected") {
-                job_url = job.url;
+                job_url = job.html_url;
               }
             }
             console.log(`job_url: ${job_url}`)
@@ -120,7 +120,7 @@ jobs:
             for (const job of jobs.data.jobs) {
               console.log(job.name);
               if (job.name == `test (${{ matrix.path }})`) {
-                job_url = job.url;
+                job_url = job.html_url;
               }
             }
             console.log(`job_url: ${job_url}`)
