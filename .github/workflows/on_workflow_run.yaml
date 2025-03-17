@@ -22,7 +22,7 @@ jobs:
       paths: ${{ steps.custard.outputs.paths }}
       ci-setups: ${{ steps.custard.outputs.ci-setups }}
     steps:
-      - name: Status in_progress
+      - name: Check in_progress
         id: check
         uses: actions/github-script@v7
         with:
@@ -34,8 +34,7 @@ jobs:
                 owner: "${{ github.repository_owner }}",
                 repo: "${{ github.event.repository.name }}",
                 head_sha: "${{ github.event.workflow_run.head_sha }}",
-                name: "test",
-                details_url: "${{ env.CHECK_URL }}",
+                name: "affected",
                 status: "in_progress",
                 output: {
                   title: "Finding affected packages",
@@ -59,7 +58,7 @@ jobs:
           commit-head: ${{ steps.inputs.outputs.commit-head }}
           commit-main: ${{ steps.inputs.outputs.commit-main }}
 
-      - name: Status completed
+      - name: Check completed
         uses: actions/github-script@v7
         with:
           script: |
@@ -72,7 +71,7 @@ jobs:
                 status: "completed",
                 conclusion: "success",
                 output: {
-                  title: "Found ${{ steps.custard.outputs.paths.length }} packages",
+                  title: "Found ${{ fromJson(steps.custard.outputs.paths).length }} packages",
                   summary: "My summary",
                   text: "My text",
                 },
@@ -82,66 +81,78 @@ jobs:
     needs: affected
     runs-on: ubuntu-latest
     permissions:
-      # https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/controlling-permissions-for-github_token
-      statuses: write # Permission to create a commit status
+      checks: write # for github.rest.checks.create()
+    strategy:
+      fail-fast: false
+      matrix:
+        path: ${{ fromJson(needs.affected.outputs.paths) }}
     steps:
-      # - name: Create status check
-      #   uses: actions/github-script@v7
-      #   with:
-      #     script: |
-      #       // https://docs.github.com/en/rest/commits/statuses?apiVersion=2022-11-28#create-a-commit-status
-      #       // https://octokit.github.io/rest.js/v21/#repos-create-commit-status
-      #       github.rest.repos.createCommitStatus({
-      #           owner: "${{ github.repository_owner }}",
-      #           repo: "${{ github.event.repository.name }}",
-      #           sha: "${{ github.event.workflow_run.head_sha }}",
-      #           target_url: "${{ env.CHECK_URL }}",
-      #           state: "pending",
-      #           description: "The job is running, click 'Details' to see progress.",
-      #           context: "${{ env.CHECK_NAME }}",
-      #       });
+      - name: Check queued
+        id: check
+        uses: actions/github-script@v7
+        with:
+          result-encoding: string
+          script: |
+            // https://docs.github.com/en/rest/checks/runs?apiVersion=2022-11-28#create-a-check-run
+            // https://octokit.github.io/rest.js/v21/#checks-create
+            const check = await github.rest.checks.create({
+                owner: "${{ github.repository_owner }}",
+                repo: "${{ github.event.repository.name }}",
+                head_sha: "${{ github.event.workflow_run.head_sha }}",
+                name: `test ${{ matrix.path }}`,
+                status: "queued",
+                output: {
+                  title: "Setting up environment.",
+                  summary: "My summary",
+                  text: "My text",
+                },
+            });
+            return check.data.id
 
       - name: Checkout ${{ github.event.workflow_run.head_sha }}
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
 
-      - name: Running sensitive code
-        id: test
-        run: |
-          START=$(date +%s)
-          if sh tests.sh; then
-            STATE="success"
-          else
-            STATE="failure"
-          fi
-          END=$(date +%s)
-          ELAPSED=$(echo "$START - $END" | bc)
-          echo "Successful in ${ELAPSED}s"
-          echo "elapsed=$ELAPSED" >> "$GITHUB_OUTPUT"
-          echo "state=$STATE" >> "$GITHUB_OUTPUT"
+      - name: Check in_progress
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // https://docs.github.com/en/rest/checks/runs?apiVersion=2022-11-28#update-a-check-run
+            // https://octokit.github.io/rest.js/v21/#checks-update
+            github.rest.checks.update({
+                owner: "${{ github.repository_owner }}",
+                repo: "${{ github.event.repository.name }}",
+                check_run_id: "${{ steps.check.outputs.result }}",
+                status: "in_progress",
+                output: {
+                  title: "Running tests",
+                  summary: "My summary",
+                  text: "My text",
+                },
+            });
 
-      # - name: Report check status
-      #   uses: actions/github-script@v7
-      #   with:
-      #     script: |
-      #       // https://docs.github.com/en/rest/commits/statuses?apiVersion=2022-11-28#create-a-commit-status
-      #       // https://octokit.github.io/rest.js/v21/#repos-create-commit-status
-      #       const state = "${{ steps.test.outputs.state }}";
-      #       github.rest.repos.createCommitStatus({
-      #           owner: "${{ github.repository_owner }}",
-      #           repo: "${{ github.event.repository.name }}",
-      #           sha: "${{ github.event.workflow_run.head_sha }}",
-      #           target_url: "${{ env.CHECK_URL }}",
-      #           state: state,
-      #           description: state === "success"
-      #             ? "Successful in ${{ steps.test.outputs.elapsed }}s"
-      #             : "Failed in ${{ steps.test.outputs.elapsed }}s",
-      #           context: "${{ env.CHECK_NAME }}",
-      #       });
-      #       if (state !== "success") {
-      #         core.setFailed("Failed in ${{ steps.test.outputs.elapsed }}s")
-      #       }
+      - name: Run tests
+        run: sh tests.sh
+
+      - name: Check completed
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // https://docs.github.com/en/rest/checks/runs?apiVersion=2022-11-28#update-a-check-run
+            // https://octokit.github.io/rest.js/v21/#checks-update
+            github.rest.checks.update({
+                owner: "${{ github.repository_owner }}",
+                repo: "${{ github.event.repository.name }}",
+                check_run_id: "${{ steps.check.outputs.result }}",
+                status: "completed",
+                conclusion: "success",
+                output: {
+                  title: "",
+                  summary: "My summary",
+                  text: "My text",
+                },
+            });
 
   github-context:
     runs-on: ubuntu-latest
