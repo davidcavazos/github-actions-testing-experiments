@@ -64,12 +64,10 @@ jobs:
             // https://docs.github.com/en/rest/checks/runs?apiVersion=2022-11-28#update-a-check-run
             // https://octokit.github.io/rest.js/v21/#checks-update
             const affected = ${{ steps.custard.outputs.paths }};
-            // ${{ steps.check.outputs.result.id }}
-            // ${{ fromJson(steps.check.outputs.result).id }}
             github.rest.checks.update({
                 owner: "${{ github.repository_owner }}",
                 repo: "${{ github.event.repository.name }}",
-                check_run_id: "${{ steps.check.outputs.result.id }}",
+                check_run_id: "${{ fromJson(steps.check.outputs.result).id }}",
                 status: "completed",
                 conclusion: "success",
                 output: {
@@ -127,7 +125,7 @@ jobs:
             github.rest.checks.update({
                 owner: "${{ github.repository_owner }}",
                 repo: "${{ github.event.repository.name }}",
-                check_run_id: "${{ steps.check.outputs.result.id }}",
+                check_run_id: "${{ fromJson(steps.check.outputs.result).id }}",
                 status: "in_progress",
                 output: {
                   title: "Running tests",
@@ -148,7 +146,7 @@ jobs:
             github.rest.checks.update({
                 owner: "${{ github.repository_owner }}",
                 repo: "${{ github.event.repository.name }}",
-                check_run_id: "${{ steps.check.outputs.result.id }}",
+                check_run_id: "${{ fromJson(steps.check.outputs.result).id }}",
                 status: "completed",
                 conclusion: "success",
                 output: {
