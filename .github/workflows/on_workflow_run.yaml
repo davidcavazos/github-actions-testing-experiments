@@ -64,6 +64,7 @@ jobs:
             // https://docs.github.com/en/rest/checks/runs?apiVersion=2022-11-28#update-a-check-run
             // https://octokit.github.io/rest.js/v21/#checks-update
             const affected = ${{ steps.custard.outputs.paths }};
+            // ${{ steps.check.outputs.result }}
             github.rest.checks.update({
                 owner: "${{ github.repository_owner }}",
                 repo: "${{ github.event.repository.name }}",
@@ -71,7 +72,7 @@ jobs:
                 status: "completed",
                 conclusion: "success",
                 output: {
-                  title: `Found ${affected} packages`,
+                  title: `Found ${affected.length} packages`,
                   summary: "My summary",
                   text: "My text",
                 },
