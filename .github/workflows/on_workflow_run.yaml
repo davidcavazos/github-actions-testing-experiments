@@ -65,6 +65,8 @@ jobs:
             // https://octokit.github.io/rest.js/v21/#checks-update
             const affected = ${{ steps.custard.outputs.paths }};
             // ${{ steps.check.outputs.result }}
+            // ${{ steps.check.outputs.result.id }}
+            // ${{ fromJson(steps.check.outputs.result).id }}
             github.rest.checks.update({
                 owner: "${{ github.repository_owner }}",
                 repo: "${{ github.event.repository.name }}",
