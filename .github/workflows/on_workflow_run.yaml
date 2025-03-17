@@ -70,6 +70,7 @@ jobs:
                 repo: "${{ github.event.repository.name }}",
                 check_run_id: "${{ steps.check.outputs.result }}",
                 status: "completed",
+                conclusion: "success",
                 output: {
                   title: "Found ${{ steps.custard.outputs.paths.length }} packages",
                   summary: "My summary",
