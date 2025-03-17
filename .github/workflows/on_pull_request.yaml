@@ -6,15 +6,6 @@ on:
   pull_request:
 
 jobs:
-  # affected:
-  #   name: Find affected packages
-  #   # uses: GoogleCloudPlatform/cloud-samples-tools/.github/workflows/find-affected.yaml@main
-  #   uses: ./.github/workflows/find-affected.yaml
-  #   with:
-  #     config-file: .github/config.jsonc
-  #     paths: pkg
-  #     artifact-name: ${{ github.event.pull_request.head.sha }}
-
   submit-job:
     name: Submit job
     runs-on: ubuntu-latest
