@@ -1,6 +1,7 @@
 name: on_workflow_run
 
 on:
+  # workflow_dispatch:
   workflow_run:
     workflows:
       - on_pull_request
@@ -8,7 +9,6 @@ on:
       - completed
 
 env:
-  COMMIT_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
   CHECK_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
 jobs:
@@ -32,18 +32,18 @@ jobs:
             const check = await github.rest.checks.create({
                 owner: "${{ github.repository_owner }}",
                 repo: "${{ github.event.repository.name }}",
-                name: "My name",
-                head_sha: "${{ env.COMMIT_SHA }}",
+                head_sha: "${{ github.event.workflow_run.head_sha }}",
+                name: "custard",
                 details_url: "${{ env.CHECK_URL }}",
                 status: "in_progress",
                 output: {
-                  title: "My title",
+                  title: "Finding affected packages",
                   summary: "My summary",
                   text: "My text",
                 },
             });
-            return check.data.id;
-      - run: echo "${{ steps.check.outputs.result }}"
+            return check.data.id
+
       - name: Load inputs
         uses: davidcavazos/github-actions-testing-experiments/.github/load-inputs@main
         id: inputs
@@ -64,10 +64,6 @@ jobs:
     permissions:
       # https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/controlling-permissions-for-github_token
       statuses: write # Permission to create a commit status
-    env:
-      COMMIT_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
-      CHECK_NAME: on_workflow_run job with full access
-      CHECK_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
     steps:
       # - name: Create status check
       #   uses: actions/github-script@v7
@@ -78,17 +74,17 @@ jobs:
       #       github.rest.repos.createCommitStatus({
       #           owner: "${{ github.repository_owner }}",
       #           repo: "${{ github.event.repository.name }}",
-      #           sha: "${{ env.COMMIT_SHA }}",
+      #           sha: "${{ github.event.workflow_run.head_sha }}",
       #           target_url: "${{ env.CHECK_URL }}",
       #           state: "pending",
       #           description: "The job is running, click 'Details' to see progress.",
       #           context: "${{ env.CHECK_NAME }}",
       #       });
 
-      - name: Checkout ${{ env.COMMIT_SHA }}
+      - name: Checkout ${{ github.event.workflow_run.head_sha }}
         uses: actions/checkout@v4
         with:
-          ref: ${{ env.COMMIT_SHA }}
+          ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: Running sensitive code
         id: test
@@ -115,7 +111,7 @@ jobs:
       #       github.rest.repos.createCommitStatus({
       #           owner: "${{ github.repository_owner }}",
       #           repo: "${{ github.event.repository.name }}",
-      #           sha: "${{ env.COMMIT_SHA }}",
+      #           sha: "${{ github.event.workflow_run.head_sha }}",
       #           target_url: "${{ env.CHECK_URL }}",
       #           state: state,
       #           description: state === "success"
