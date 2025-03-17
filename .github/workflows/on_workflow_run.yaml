@@ -72,7 +72,7 @@ jobs:
                 status: "completed",
                 conclusion: "success",
                 output: {
-                  title: "Found ${{ steps.custard.outputs.paths.length }} packages",
+                  title: "Found ${{ fromJson(steps.custard.outputs.paths).length }} packages",
                   summary: "My summary",
                   text: "My text",
                 },
