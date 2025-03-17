@@ -34,7 +34,7 @@ jobs:
                 owner: "${{ github.repository_owner }}",
                 repo: "${{ github.event.repository.name }}",
                 head_sha: "${{ github.event.workflow_run.head_sha }}",
-                name: "custard",
+                name: "test",
                 details_url: "${{ env.CHECK_URL }}",
                 status: "in_progress",
                 output: {
@@ -76,7 +76,6 @@ jobs:
                   text: "My text",
                 },
             });
-            return check.data.id
 
   test:
     needs: affected
