@@ -44,13 +44,14 @@ jobs:
 
             // https://docs.github.com/en/rest/actions/workflow-jobs?apiVersion=2022-11-28#list-jobs-for-a-workflow-run
             // https://octokit.github.io/rest.js/v21/#actions-list-jobs-for-workflow-run
-            const jobs = await github.rest.actions.listJobsForWorkflowRun({
+            const workflow = await github.rest.actions.listJobsForWorkflowRun({
               owner: "${{ github.repository_owner }}",
               repo: "${{ github.event.repository.name }}",
               run_id: "${{ github.run_id }}",
             });
 
-            for (const job of jobs) {
+            console.log(JSON.stringify(workflow));
+            for (const job of workflow.jobs) {
               console.log(JSON.stringify(job));
             }
 
