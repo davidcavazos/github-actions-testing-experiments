@@ -36,10 +36,12 @@ jobs:
             });
             let job_url = "";
             for (const job of jobs.data.jobs) {
+              console.log(job.name);
               if (job.name == "affected") {
                 job_url = job.url;
               }
             }
+            console.log(`job_url: ${job_url}`)
 
             // https://docs.github.com/en/rest/checks/runs?apiVersion=2022-11-28#create-a-check-run
             // https://octokit.github.io/rest.js/v21/#checks-create
@@ -117,10 +119,11 @@ jobs:
             let job_url = "";
             for (const job of jobs.data.jobs) {
               console.log(job.name);
-              if (job.name == "affected") {
+              if (job.name == `test (${{ matrix.path }})`) {
                 job_url = job.url;
               }
             }
+            console.log(`job_url: ${job_url}`)
 
             // https://docs.github.com/en/rest/checks/runs?apiVersion=2022-11-28#create-a-check-run
             // https://octokit.github.io/rest.js/v21/#checks-create
