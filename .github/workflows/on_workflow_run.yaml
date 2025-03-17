@@ -23,12 +23,13 @@ jobs:
       ci-setups: ${{ steps.custard.outputs.ci-setups }}
     steps:
       - name: Status in_progress
+        id: check
         uses: actions/github-script@v7
         with:
           script: |
             // https://docs.github.com/en/rest/commits/statuses?apiVersion=2022-11-28#create-a-commit-status
             // https://octokit.github.io/rest.js/v21/#repos-create-commit-status
-            github.rest.checks.create({
+            const check = await github.rest.checks.create({
                 owner: "${{ github.repository_owner }}",
                 repo: "${{ github.event.repository.name }}",
                 name: "My name",
@@ -41,6 +42,9 @@ jobs:
                   text: "My text",
                 },
             });
+            return check;
+      - run: echo "${{ steps.check.outputs.result }}"
+      - run: echo "${{ toJson(steps.check.outputs.result) }}"
 
       - name: Load inputs
         uses: davidcavazos/github-actions-testing-experiments/.github/load-inputs@main
