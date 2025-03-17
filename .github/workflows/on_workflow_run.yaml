@@ -4,7 +4,7 @@ on:
   # workflow_dispatch:
   workflow_run:
     workflows:
-      - on_pull_request
+      - custard CI
     types:
       - completed
 
