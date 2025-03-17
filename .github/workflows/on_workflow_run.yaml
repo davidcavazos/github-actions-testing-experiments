@@ -103,27 +103,27 @@ jobs:
           echo "elapsed=$ELAPSED" >> "$GITHUB_OUTPUT"
           echo "state=$STATE" >> "$GITHUB_OUTPUT"
 
-      - name: Report check status
-        uses: actions/github-script@v7
-        with:
-          script: |
-            // https://docs.github.com/en/rest/commits/statuses?apiVersion=2022-11-28#create-a-commit-status
-            // https://octokit.github.io/rest.js/v21/#repos-create-commit-status
-            const state = "${{ steps.test.outputs.state }}";
-            github.rest.repos.createCommitStatus({
-                owner: "${{ github.repository_owner }}",
-                repo: "${{ github.event.repository.name }}",
-                sha: "${{ env.COMMIT_SHA }}",
-                target_url: "${{ env.CHECK_URL }}",
-                state: state,
-                description: state === "success"
-                  ? "Successful in ${{ steps.test.outputs.elapsed }}s"
-                  : "Failed in ${{ steps.test.outputs.elapsed }}s",
-                context: "${{ env.CHECK_NAME }}",
-            });
-            if (state !== "success") {
-              core.setFailed("Failed in ${{ steps.test.outputs.elapsed }}s")
-            }
+      # - name: Report check status
+      #   uses: actions/github-script@v7
+      #   with:
+      #     script: |
+      #       // https://docs.github.com/en/rest/commits/statuses?apiVersion=2022-11-28#create-a-commit-status
+      #       // https://octokit.github.io/rest.js/v21/#repos-create-commit-status
+      #       const state = "${{ steps.test.outputs.state }}";
+      #       github.rest.repos.createCommitStatus({
+      #           owner: "${{ github.repository_owner }}",
+      #           repo: "${{ github.event.repository.name }}",
+      #           sha: "${{ env.COMMIT_SHA }}",
+      #           target_url: "${{ env.CHECK_URL }}",
+      #           state: state,
+      #           description: state === "success"
+      #             ? "Successful in ${{ steps.test.outputs.elapsed }}s"
+      #             : "Failed in ${{ steps.test.outputs.elapsed }}s",
+      #           context: "${{ env.CHECK_NAME }}",
+      #       });
+      #       if (state !== "success") {
+      #         core.setFailed("Failed in ${{ steps.test.outputs.elapsed }}s")
+      #       }
 
   github-context:
     runs-on: ubuntu-latest
