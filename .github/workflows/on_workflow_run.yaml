@@ -27,21 +27,6 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            // https://docs.github.com/en/rest/checks/runs?apiVersion=2022-11-28#create-a-check-run
-            // https://octokit.github.io/rest.js/v21/#checks-create
-            const check = await github.rest.checks.create({
-              owner: "${{ github.repository_owner }}",
-              repo: "${{ github.event.repository.name }}",
-              head_sha: "${{ github.event.workflow_run.head_sha }}",
-              name: "affected",
-              status: "in_progress",
-              output: {
-                title: "Finding affected packages",
-                summary: "My summary",
-                text: "My text",
-              },
-            });
-
             // https://docs.github.com/en/rest/actions/workflow-jobs?apiVersion=2022-11-28#list-jobs-for-a-workflow-run
             // https://octokit.github.io/rest.js/v21/#actions-list-jobs-for-workflow-run
             const jobs = await github.rest.actions.listJobsForWorkflowRun({
@@ -49,11 +34,28 @@ jobs:
               repo: "${{ github.event.repository.name }}",
               run_id: "${{ github.run_id }}",
             });
-
+            let job_url = "";
             for (const job of jobs.data.jobs) {
-              console.log(JSON.stringify(job, null, 2));
+              if (job.name == "affected") {
+                job_url = job.url;
+              }
             }
 
+            // https://docs.github.com/en/rest/checks/runs?apiVersion=2022-11-28#create-a-check-run
+            // https://octokit.github.io/rest.js/v21/#checks-create
+            const check = await github.rest.checks.create({
+              owner: "${{ github.repository_owner }}",
+              repo: "${{ github.event.repository.name }}",
+              head_sha: "${{ github.event.workflow_run.head_sha }}",
+              name: "affected",
+              details_url: job_url,
+              status: "in_progress",
+              output: {
+                title: "Finding affected packages",
+                summary: "My summary",
+                text: "My text",
+              },
+            });
             return check.data;
 
       - name: Load inputs
@@ -105,6 +107,21 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
+            // https://docs.github.com/en/rest/actions/workflow-jobs?apiVersion=2022-11-28#list-jobs-for-a-workflow-run
+            // https://octokit.github.io/rest.js/v21/#actions-list-jobs-for-workflow-run
+            const jobs = await github.rest.actions.listJobsForWorkflowRun({
+              owner: "${{ github.repository_owner }}",
+              repo: "${{ github.event.repository.name }}",
+              run_id: "${{ github.run_id }}",
+            });
+            let job_url = "";
+            for (const job of jobs.data.jobs) {
+              console.log(job.name);
+              if (job.name == "affected") {
+                job_url = job.url;
+              }
+            }
+
             // https://docs.github.com/en/rest/checks/runs?apiVersion=2022-11-28#create-a-check-run
             // https://octokit.github.io/rest.js/v21/#checks-create
             const check = await github.rest.checks.create({
