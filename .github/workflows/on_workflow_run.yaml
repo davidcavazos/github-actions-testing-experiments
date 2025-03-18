@@ -1,7 +1,7 @@
 name: on_workflow_run
 
 on:
-  # workflow_dispatch:
+  workflow_dispatch:
   workflow_run:
     workflows:
       - custard CI
@@ -22,77 +22,38 @@ jobs:
       paths: ${{ steps.custard.outputs.paths }}
       ci-setups: ${{ steps.custard.outputs.ci-setups }}
     steps:
-      - name: Check in_progress
-        id: check
-        uses: actions/github-script@v7
+      - uses: davidcavazos/github-actions-testing-experiments/affected/get-job@main
+        id: job
         with:
-          script: |
-            // https://docs.github.com/en/rest/actions/workflow-jobs?apiVersion=2022-11-28#list-jobs-for-a-workflow-run
-            // https://octokit.github.io/rest.js/v21/#actions-list-jobs-for-workflow-run
-            const jobs = await github.rest.actions.listJobsForWorkflowRun({
-              owner: "${{ github.repository_owner }}",
-              repo: "${{ github.event.repository.name }}",
-              run_id: "${{ github.run_id }}",
-            });
-            let job_url = "";
-            for (const job of jobs.data.jobs) {
-              console.log(job.name);
-              if (job.name == "affected") {
-                job_url = job.html_url;
-              }
-            }
-            console.log(`job_url: ${job_url}`)
-
-            // https://docs.github.com/en/rest/checks/runs?apiVersion=2022-11-28#create-a-check-run
-            // https://octokit.github.io/rest.js/v21/#checks-create
-            const check = await github.rest.checks.create({
-              owner: "${{ github.repository_owner }}",
-              repo: "${{ github.event.repository.name }}",
-              head_sha: "${{ github.event.workflow_run.head_sha }}",
-              name: "affected",
-              details_url: job_url,
-              status: "in_progress",
-              output: {
-                title: "Finding affected packages",
-                summary: "My summary",
-                text: "My text",
-              },
-            });
-            return check.data;
-
-      - name: Load inputs
-        uses: davidcavazos/github-actions-testing-experiments/.github/load-inputs@main
+          job-name: affected
+      - uses: davidcavazos/github-actions-testing-experiments/affected/create-check@main
+        id: check
+        with:
+          commit-sha: ${{ github.event.workflow_run.head_sha }}
+          name: summary
+          status: in_progress
+          title: Finding affected packages
+          summary: My summary
+          text: My text
+      - uses: ./load-inputs
         id: inputs
         with:
           run-id: ${{ github.event.workflow_run.id }}
 
       - name: Find affected packages
-        uses: davidcavazos/github-actions-testing-experiments/.github/affected@main
+        uses: davidcavazos/github-actions-testing-experiments/affected@main
         id: custard
         with:
           config-file: .github/config.jsonc
           commit-head: ${{ steps.inputs.outputs.commit-head }}
           commit-main: ${{ steps.inputs.outputs.commit-main }}
 
-      - name: Check completed
-        uses: actions/github-script@v7
+      - uses: davidcavazos/github-actions-testing-experiments/affected/create-check@main
         with:
-          script: |
-            // https://docs.github.com/en/rest/checks/runs?apiVersion=2022-11-28#update-a-check-run
-            // https://octokit.github.io/rest.js/v21/#checks-update
-            const affected = ${{ steps.custard.outputs.paths }};
-            github.rest.checks.update({
-              owner: "${{ github.repository_owner }}",
-              repo: "${{ github.event.repository.name }}",
-              check_run_id: "${{ fromJson(steps.check.outputs.result).id }}",
-              status: "completed",
-              conclusion: "success",
-              output: {
-                title: `Found ${affected.length} package${affected == 1 ? '' : "s"}`,
-                summary: "My summary",
-                text: "My text",
-              },
-            });
+          check-run-id: ${{ steps.check.outputs.run-id }}
+          status: completed
+          conclusion: success
+          title: Found ${{ fromJson(steps.custard.outputs.paths).length }} package(s)
 
   test:
     needs: affected
