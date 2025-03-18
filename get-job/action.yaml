@@ -52,7 +52,7 @@ runs:
             run_id: "${{ inputs.run-id }}",
           });
           for (const job of jobs.data.jobs) {
-            if (job.name == ${{ inputs.job-name }}) {
+            if (job.name == "${{ inputs.job-name }}") {
               return {
                 id: job.id,
                 url: job.html_url,
