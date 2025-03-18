@@ -47,9 +47,9 @@ runs:
         script: |
           // https://docs.github.com/en/rest/checks/runs?apiVersion=2022-11-28#create-a-check-run
           // https://octokit.github.io/rest.js/v21/#checks-create
-          const title = "${{ inputs.title }}" || undefined;
-          const summary = "${{ inputs.summary }}" || undefined;
-          const text = "${{ inputs.text }}" || undefined;
+          const title = "${{ inputs.title }}";
+          const summary = "${{ inputs.summary }}";
+          const text = "${{ inputs.text }}";
           let output = undefined;
           if (title || summary || text) {
             output = {title: title, summary: summary, text: text};
