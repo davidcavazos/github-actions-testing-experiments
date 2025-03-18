@@ -47,13 +47,12 @@ runs:
         script: |
           // https://docs.github.com/en/rest/checks/runs?apiVersion=2022-11-28#create-a-check-run
           // https://octokit.github.io/rest.js/v21/#checks-create
+          const title = "${{ inputs.title }}" || undefined;
+          const summary = "${{ inputs.summary }}" || undefined;
+          const text = "${{ inputs.text }}" || undefined;
           let output = undefined;
-          if (${{ inputs.title || inputs.summary || inputs.text }}) {
-            output = {
-              title: ${{ inputs.title }},
-              summary: ${{ inputs.summary }} || undefined,
-              text: ${{ inputs.text }} || undefined,
-            };
+          if (title || summary || text) {
+            output = {title: title, summary: summary, text: text};
           }
           await github.rest.checks.update({
             owner: "${{ inputs.repository-owner }}",
