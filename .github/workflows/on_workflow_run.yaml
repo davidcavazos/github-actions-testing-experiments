@@ -37,11 +37,11 @@ jobs:
           title: Finding affected packages
           summary: My summary
           text: My text
-      - uses: ./load-inputs
+      - name: Load inputs
+        uses: davidcavazos/github-actions-testing-experiments/load-inputs@main
         id: inputs
         with:
           run-id: ${{ github.event.workflow_run.id }}
-
       - name: Find affected packages
         uses: davidcavazos/github-actions-testing-experiments/affected@main
         id: custard
@@ -49,7 +49,6 @@ jobs:
           config-file: .github/config.jsonc
           commit-head: ${{ steps.inputs.outputs.commit-head }}
           commit-main: ${{ steps.inputs.outputs.commit-main }}
-
       - name: Update check success
         uses: davidcavazos/github-actions-testing-experiments/update-check@main
         with:
