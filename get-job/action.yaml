@@ -53,10 +53,14 @@ runs:
           });
           for (const job of jobs.data.jobs) {
             if (job.name == "${{ inputs.job-name }}") {
-              return {
+              const output = {
                 id: job.id,
                 url: job.html_url,
               };
+              console.log(`id: ${output.id}`)
+              console.log(`url: ${output.url}`)
+              return output;
             }
           }
+          console.log(`Job '${{ inputs.job-name }}' not found.`);
           return {};
