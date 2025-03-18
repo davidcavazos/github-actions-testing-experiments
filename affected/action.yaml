@@ -48,7 +48,6 @@ outputs:
     description: The CI setup configurations for the affected packages.
     value: ${{ steps.custard.outputs.ci-setups }}
 
-
 runs:
   using: composite
   steps:

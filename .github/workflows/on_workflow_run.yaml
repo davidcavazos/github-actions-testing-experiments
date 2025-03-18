@@ -22,11 +22,13 @@ jobs:
       paths: ${{ steps.custard.outputs.paths }}
       ci-setups: ${{ steps.custard.outputs.ci-setups }}
     steps:
-      - uses: davidcavazos/github-actions-testing-experiments/get-job@main
+      - name: Get job
+        uses: davidcavazos/github-actions-testing-experiments/get-job@main
         id: job
         with:
           job-name: affected
-      - uses: davidcavazos/github-actions-testing-experiments/create-check@main
+      - name: Create check in_progress
+        uses: davidcavazos/github-actions-testing-experiments/create-check@main
         id: check
         with:
           commit-sha: ${{ github.event.workflow_run.head_sha }}
@@ -48,7 +50,8 @@ jobs:
           commit-head: ${{ steps.inputs.outputs.commit-head }}
           commit-main: ${{ steps.inputs.outputs.commit-main }}
 
-      - uses: davidcavazos/github-actions-testing-experiments/update-check@main
+      - name: Update check success
+        uses: davidcavazos/github-actions-testing-experiments/update-check@main
         with:
           check-run-id: ${{ steps.check.outputs.run-id }}
           status: completed
