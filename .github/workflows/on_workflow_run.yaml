@@ -23,9 +23,6 @@ jobs:
       ci-setups: ${{ steps.custard.outputs.ci-setups }}
       check-run-id: ${{ steps.check.outputs.run-id }}
     steps:
-      - name: Get job
-        uses: davidcavazos/github-actions-testing-experiments/get-job@main
-        id: job
       - name: Create check queued
         uses: davidcavazos/github-actions-testing-experiments/create-check@main
         id: check
@@ -80,7 +77,9 @@ jobs:
         with:
           ref: ${{ env.HEAD_SHA }}
       - name: Run tests
-        run: sh tests.sh
+        run: |
+          exit 1 # intentionally fail
+          sh tests.sh
 
       - name: Update status success
         uses: davidcavazos/github-actions-testing-experiments/create-status@main
