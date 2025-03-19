@@ -21,17 +21,18 @@ jobs:
     outputs:
       paths: ${{ steps.custard.outputs.paths }}
       ci-setups: ${{ steps.custard.outputs.ci-setups }}
+      check-run-id: ${{ steps.check.outputs.run-id }}
     steps:
       - name: Get job
         uses: davidcavazos/github-actions-testing-experiments/get-job@main
         id: job
-      - name: Create check in_progress
+      - name: Create check queued
         uses: davidcavazos/github-actions-testing-experiments/create-check@main
         id: check
         with:
           commit-sha: ${{ env.HEAD_SHA }}
           name: summary
-          status: in_progress
+          status: queued
           title: Finding affected packages
           summary: My summary
           text: My text
@@ -41,13 +42,12 @@ jobs:
         with:
           config-file: .github/config.jsonc
           head-sha: ${{ env.HEAD_SHA }}
-      - name: Update check success
+      - name: Update check in_progress
         uses: davidcavazos/github-actions-testing-experiments/update-check@main
         with:
           check-run-id: ${{ steps.check.outputs.run-id }}
-          status: completed
-          conclusion: success
-          title: Found ${{ steps.custard.outputs.num-paths }} package(s)
+          status: in_progress
+          title: Running ${{ steps.custard.outputs.num-paths }} package(s)
 
   test:
     needs: affected
@@ -89,6 +89,20 @@ jobs:
           name: ${{ github.workflow }} / ${{ env.JOB_NAME }}
           status: success
           details-url: ${{ steps.job.outputs.url }}
+
+  summary:
+    needs: [affected, test]
+    runs-on: ubuntu-latest
+    permissions:
+      statuses: write # for create-status
+    steps:
+      - name: Update check success
+        uses: davidcavazos/github-actions-testing-experiments/update-check@main
+        with:
+          check-run-id: ${{ needs.affected.outputs.check-run-id }}
+          status: completed
+          conclusion: success
+          title: Done
 
   github-context:
     runs-on: ubuntu-latest
