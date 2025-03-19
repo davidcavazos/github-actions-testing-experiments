@@ -71,7 +71,7 @@ jobs:
         uses: davidcavazos/github-actions-testing-experiments/create-status@main
         with:
           commit-sha: ${{ env.HEAD_SHA }}
-          name: ${{ env.JOB_NAME }}
+          name: ${{ github.workflow }} / ${{ env.JOB_NAME }}
           title: Running tests
           details-url: ${{ steps.job.outputs.url }}
 
@@ -86,7 +86,7 @@ jobs:
         uses: davidcavazos/github-actions-testing-experiments/create-status@main
         with:
           commit-sha: ${{ env.HEAD_SHA }}
-          name: ${{ env.JOB_NAME }}
+          name: ${{ github.workflow }} / ${{ env.JOB_NAME }}
           status: success
           details-url: ${{ steps.job.outputs.url }}
 
