@@ -18,7 +18,7 @@ description: Gets the action job ID and URL.
 inputs:
   job-name:
     description: The name of the job.
-    required: true
+    default: ${{ github.job }}
   repository-owner:
     description: The owner of the repository.
     default: ${{ github.repository_owner }}
