@@ -94,7 +94,7 @@ jobs:
     needs: [affected, test]
     runs-on: ubuntu-latest
     permissions:
-      statuses: write # for create-status
+      checks: write # for update-check
     steps:
       - name: Update check success
         uses: davidcavazos/github-actions-testing-experiments/update-check@main
