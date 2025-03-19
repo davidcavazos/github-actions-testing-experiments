@@ -34,7 +34,6 @@ jobs:
           commit-sha: ${{ github.event.workflow_run.head_sha }}
           name: summary
           status: in_progress
-          details-url: ${{ steps.job.outputs.url }}
           title: Finding affected packages
           summary: My summary
           text: My text
