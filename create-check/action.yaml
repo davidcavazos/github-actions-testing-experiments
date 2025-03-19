@@ -27,6 +27,8 @@ inputs:
     default: queued
   conclusion:
     description: The conclusion of the check, one of "action_required", "cancelled", "failure", "neutral", "success", "skipped", "timed_out".
+  details-url:
+    description: The URL to the details of the check.
   title:
     description: The title of the check, this appears in the "progress" of the check UI.
   summary:
@@ -68,6 +70,7 @@ runs:
             name: "${{ inputs.name }}",
             status: "${{ inputs.status }}",
             conclusion: "${{ inputs.conclusion }}" || undefined,
+            details_url: "${{ inputs.details-url }}" || undefined,
             output: output,
           });
           return check.data;
