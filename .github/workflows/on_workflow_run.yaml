@@ -16,6 +16,7 @@ env:
 jobs:
   affected:
     runs-on: ubuntu-latest
+    continue-on-error: true
     permissions:
       checks: write # for create-check and update-check
     outputs:
@@ -23,6 +24,7 @@ jobs:
       ci-setups: ${{ steps.custard.outputs.ci-setups }}
       check-run-id: ${{ steps.check.outputs.run-id }}
     steps:
+      - run: exit 1 # intentional failure
       - name: Create check queued
         uses: davidcavazos/github-actions-testing-experiments/create-check@main
         id: check
@@ -49,6 +51,7 @@ jobs:
   test:
     needs: affected
     runs-on: ubuntu-latest
+    continue-on-error: true
     permissions:
       statuses: write # for create-status and update-status
     strategy:
@@ -92,9 +95,11 @@ jobs:
   summary:
     needs: [affected, test]
     runs-on: ubuntu-latest
+    continue-on-error: true
     permissions:
       checks: write # for update-check
     steps:
+      - run: exit 1 # intentional failure
       - name: Update check success
         uses: davidcavazos/github-actions-testing-experiments/update-check@main
         with:
