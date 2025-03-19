@@ -55,7 +55,7 @@ jobs:
           check-run-id: ${{ steps.check.outputs.run-id }}
           status: completed
           conclusion: success
-          title: Found |${${{ steps.custard.outputs.paths }}.length}|${{ steps.custard.outputs.paths.length }}|${{ fromJson(steps.custard.outputs.paths) }}|${{ fromJson(steps.custard.outputs.paths).length }}|${{ toJson(steps.custard.outputs.paths) }}|  package(s)
+          title: Found ${{ steps.custard.outputs.num-paths }} package(s)
 
   test:
     needs: affected
