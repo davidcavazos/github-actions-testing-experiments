@@ -74,7 +74,7 @@ jobs:
         with:
           commit-sha: ${{ env.HEAD_SHA }}
           name: ${{ env.JOB_NAME }}
-          title: Setting up environment
+          title: Running tests
           details-url: ${{ steps.job.outputs.url }}
 
       - name: Checkout ${{ env.HEAD_SHA }}
