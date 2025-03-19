@@ -1,8 +1,6 @@
 name: custard CI
 
 on:
-  push:
-    branches: main
   pull_request:
 
 jobs:
@@ -28,5 +26,5 @@ jobs:
       - run: 'echo "github.event.pull_request.head.sha: ${{ github.event.pull_request.head.sha }}"'
       - run: 'echo "github.event.head_commit.id: ${{ github.event.head_commit.id }}"'
 
-      - name: Save inputs
-        uses: davidcavazos/github-actions-testing-experiments/save-inputs@main
+      # - name: Save inputs
+      #   uses: davidcavazos/github-actions-testing-experiments/save-inputs@main

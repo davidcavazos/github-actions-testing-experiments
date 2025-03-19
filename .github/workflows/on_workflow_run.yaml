@@ -1,24 +1,21 @@
 name: on_workflow_run
 
 on:
+  push:
+    branches: main
   workflow_dispatch:
   workflow_run:
     workflows:
       - custard CI
     types:
-      - completed
-
-env:
-  CHECK_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      - requested
 
 jobs:
   affected:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     permissions:
       checks: write # for create-check and update-check
     outputs:
-      pull-request-number: ${{ steps.inputs.outputs.pull-request-number }}
       paths: ${{ steps.custard.outputs.paths }}
       ci-setups: ${{ steps.custard.outputs.ci-setups }}
     steps:
@@ -37,18 +34,12 @@ jobs:
           title: Finding affected packages
           summary: My summary
           text: My text
-      - name: Load inputs
-        uses: davidcavazos/github-actions-testing-experiments/load-inputs@main
-        id: inputs
-        with:
-          run-id: ${{ github.event.workflow_run.id }}
       - name: Find affected packages
         uses: davidcavazos/github-actions-testing-experiments/affected@main
         id: custard
         with:
           config-file: .github/config.jsonc
           head-sha: ${{ github.event.workflow_run.head_sha }}
-          main-sha: ${{ steps.inputs.outputs.main-sha }}
       - name: Update check success
         uses: davidcavazos/github-actions-testing-experiments/update-check@main
         with:

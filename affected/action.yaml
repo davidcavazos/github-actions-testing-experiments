@@ -21,10 +21,10 @@ inputs:
     required: true
   head-sha:
     description: The commit sha of the head of the PR.
-    required: true
+    default: HEAD
   main-sha:
     description: The commit sha of the main branch.
-    required: true
+    default: origin/main
   paths:
     description: Comma-separated package paths instead of git diff.
   all:
