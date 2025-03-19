@@ -62,7 +62,7 @@ runs:
             owner: "${{ inputs.repository-owner }}",
             repo: "${{ inputs.repository-name }}",
             check_run_id: "${{ inputs.check-run-id }}",
-            name: `${{ inputs.name }}`,
+            name: `${{ inputs.name }}` || undefined,
             status: "${{ inputs.status }}",
             conclusion: "${{ inputs.conclusion }}" || undefined,
             details_url: detailsUrl,

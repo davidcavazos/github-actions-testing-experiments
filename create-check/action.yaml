@@ -71,7 +71,7 @@ runs:
             owner: "${{ inputs.repository-owner }}",
             repo: "${{ inputs.repository-name }}",
             head_sha: "${{ inputs.commit-sha }}",
-            name: `${{ inputs.name }}`,
+            name: `${{ inputs.name }}` || undefined,
             status: "${{ inputs.status }}",
             conclusion: "${{ inputs.conclusion }}" || undefined,
             details_url: detailsUrl,
