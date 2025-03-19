@@ -10,6 +10,9 @@ on:
     types:
       - requested
 
+env:
+  HEAD_SHA: ${{ env.HEAD_SHA || github.sha }}
+
 jobs:
   affected:
     runs-on: ubuntu-latest
@@ -28,7 +31,7 @@ jobs:
         uses: davidcavazos/github-actions-testing-experiments/create-check@main
         id: check
         with:
-          commit-sha: ${{ github.event.workflow_run.head_sha }}
+          commit-sha: ${{ env.HEAD_SHA }}
           name: summary
           status: in_progress
           title: Finding affected packages
@@ -39,7 +42,7 @@ jobs:
         id: custard
         with:
           config-file: .github/config.jsonc
-          head-sha: ${{ github.event.workflow_run.head_sha }}
+          head-sha: ${{ env.HEAD_SHA }}
       - name: Update check success
         uses: davidcavazos/github-actions-testing-experiments/update-check@main
         with:
@@ -69,22 +72,22 @@ jobs:
         id: check
         uses: davidcavazos/github-actions-testing-experiments/create-status@main
         with:
-          commit-sha: ${{ github.event.workflow_run.head_sha }}
+          commit-sha: ${{ env.HEAD_SHA }}
           name: ${{ env.JOB_NAME }}
           title: Setting up environment
           details-url: ${{ steps.job.outputs.url }}
 
-      - name: Checkout ${{ github.event.workflow_run.head_sha }}
+      - name: Checkout ${{ env.HEAD_SHA }}
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
+          ref: ${{ env.HEAD_SHA }}
       - name: Run tests
         run: sh tests.sh
 
       - name: Update status success
         uses: davidcavazos/github-actions-testing-experiments/create-status@main
         with:
-          commit-sha: ${{ github.event.workflow_run.head_sha }}
+          commit-sha: ${{ env.HEAD_SHA }}
           name: ${{ env.JOB_NAME }}
           status: success
           details-url: ${{ steps.job.outputs.url }}
