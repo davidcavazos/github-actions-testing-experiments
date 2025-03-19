@@ -27,12 +27,9 @@ outputs:
   pull-request-number:
     description: Pull request number.
     value: ${{ steps.vars.outputs.pull-request-number }}
-  commit-main:
+  main-sha:
     description: Commit SHA of the main branch.
-    value: ${{ steps.vars.outputs.commit-main }}
-  commit-head:
-    description: Commit SHA of the head branch.
-    value: ${{ steps.vars.outputs.commit-head }}
+    value: ${{ steps.vars.outputs.main-sha }}
 
 runs:
   using: composite
@@ -49,5 +46,4 @@ runs:
       shell: bash
       run: |
         echo "pull-request-number=$(cat ${{ steps.artifact.outputs.download-path }}/pull-request-number)" | tee -a "$GITHUB_OUTPUT"
-        echo "commit-main=$(cat ${{ steps.artifact.outputs.download-path }}/commit-main)" | tee -a "$GITHUB_OUTPUT"
-        echo "commit-head=$(cat ${{ steps.artifact.outputs.download-path }}/commit-head)" | tee -a "$GITHUB_OUTPUT"
+        echo "main-sha=$(cat ${{ steps.artifact.outputs.download-path }}/main-sha)" | tee -a "$GITHUB_OUTPUT"

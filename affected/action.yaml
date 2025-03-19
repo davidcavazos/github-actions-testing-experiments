@@ -19,10 +19,10 @@ inputs:
   config-file:
     description: Path to the custard config file.
     required: true
-  commit-head:
+  head-sha:
     description: The commit sha of the head of the PR.
     required: true
-  commit-main:
+  main-sha:
     description: The commit sha of the main branch.
     required: true
   paths:
@@ -44,9 +44,6 @@ outputs:
   paths:
     description: The affected paths as a JSON list.
     value: ${{ steps.custard.outputs.paths }}
-  num-paths:
-    description: The number of affected paths.
-    value: "${{ fromJson(steps.custard.outputs.paths).length }}"
   ci-setups:
     description: The CI setup configurations for the affected packages.
     value: ${{ steps.custard.outputs.ci-setups }}
@@ -76,7 +73,7 @@ runs:
     - name: Checkout the commit history
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       with:
-        ref: ${{ inputs.commit-head }}
+        ref: ${{ inputs.head-sha }}
         fetch-depth: 0 # fetch the entire branch history to find diffs
     - name: Get diffs from main and the PR
       shell: bash
@@ -93,8 +90,8 @@ runs:
             | tee diffs.txt
         fi
       env:
-        HEAD: ${{ inputs.commit-head }}
-        MAIN: ${{ inputs.commit-main }}
+        HEAD: ${{ inputs.head-sha }}
+        MAIN: ${{ inputs.main-sha }}
         PATHS: ${{ inputs.paths }}
     - name: Find affected packages
       id: custard

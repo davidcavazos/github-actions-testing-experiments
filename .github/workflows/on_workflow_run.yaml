@@ -42,23 +42,20 @@ jobs:
         id: inputs
         with:
           run-id: ${{ github.event.workflow_run.id }}
-      - run: echo "head ${{ steps.inputs.outputs.commit-head }}"
-      - run: echo "main ${{ steps.inputs.outputs.commit-main }}"
-      - run: echo "ctx  ${{ github.event.workflow_run.head_sha }}"
       - name: Find affected packages
         uses: davidcavazos/github-actions-testing-experiments/affected@main
         id: custard
         with:
           config-file: .github/config.jsonc
-          commit-head: ${{ steps.inputs.outputs.commit-head }}
-          commit-main: ${{ steps.inputs.outputs.commit-main }}
+          head-sha: ${{ github.event.workflow_run.head_sha }}
+          main-sha: ${{ steps.inputs.outputs.main-sha }}
       - name: Update check success
         uses: davidcavazos/github-actions-testing-experiments/update-check@main
         with:
           check-run-id: ${{ steps.check.outputs.run-id }}
           status: completed
           conclusion: success
-          title: Found ${{ steps.custard.outputs.num-paths }} package(s)
+          title: Found ${{ steps.custard.outputs.paths }} package(s)
 
   test:
     needs: affected
