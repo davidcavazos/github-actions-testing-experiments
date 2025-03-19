@@ -32,10 +32,10 @@ inputs:
 outputs:
   id:
     description: The action job ID, undefined if not found.
-    value: ${{ steps.job.outputs.result.id }}
+    value: ${{ fromJson(steps.job.outputs.result).id }}
   url:
     description: The action job URL, undefined if not found.
-    value: ${{ steps.job.outputs.result.url }}
+    value: ${{ fromJson(steps.job.outputs.result).url }}
 
 runs:
   using: composite
