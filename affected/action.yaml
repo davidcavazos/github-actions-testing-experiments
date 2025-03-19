@@ -46,7 +46,7 @@ outputs:
     value: ${{ steps.custard.outputs.paths }}
   num-paths:
     description: The number of affected paths.
-    value: ${{ fromJson(steps.custard.outputs.paths).length }}
+    value: ${{ steps.custard.outputs.paths.length }}
   ci-setups:
     description: The CI setup configurations for the affected packages.
     value: ${{ steps.custard.outputs.ci-setups }}
