@@ -47,19 +47,24 @@ runs:
         script: |
           // https://docs.github.com/en/rest/checks/runs?apiVersion=2022-11-28#create-a-check-run
           // https://octokit.github.io/rest.js/v21/#checks-create
-          const title = "${{ inputs.title }}";
-          const summary = "${{ inputs.summary }}";
-          const text = "${{ inputs.text }}";
+          const detailsUrl = `${{ inputs.details-url }}` || undefined;
+          if (detailsUrl) {
+            core.warning(`details-url is not supported unless in a GitHub app.`);
+          }
+          const title = `${{ inputs.title }}`;
+          const summary = `${{ inputs.summary }}`;
+          const text = `${{ inputs.text }}`;
           let output = undefined;
           if (title || summary || text) {
             output = {title: title, summary: summary, text: text};
           }
-          await github.rest.checks.update({
+          github.rest.checks.update({
             owner: "${{ inputs.repository-owner }}",
             repo: "${{ inputs.repository-name }}",
             check_run_id: "${{ inputs.check-run-id }}",
-            name: "${{ inputs.name }}" || undefined,
-            status: "${{ inputs.status }}" || undefined,
+            name: `${{ inputs.name }}`,
+            status: "${{ inputs.status }}",
             conclusion: "${{ inputs.conclusion }}" || undefined,
+            details_url: detailsUrl,
             output: output,
           });

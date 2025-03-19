@@ -50,8 +50,8 @@ runs:
             repo: "${{ inputs.repository-name }}",
             sha: "${{ inputs.commit-sha }}",
             state: "${{ inputs.status }}",
-            context: "${{ inputs.name }}",
-            description: "${{ inputs.title }}" || undefined,
-            target_url: "${{ inputs.details-url }}" || undefined,
+            context: `${{ inputs.name }}`,
+            description: `${{ inputs.title }}` || undefined,
+            target_url: `${{ inputs.details-url }}` || undefined,
           });
 
