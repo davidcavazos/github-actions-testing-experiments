@@ -11,7 +11,7 @@ on:
       - requested
 
 env:
-  HEAD_SHA: ${{ env.HEAD_SHA || github.sha }}
+  HEAD_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
 
 jobs:
   affected:
