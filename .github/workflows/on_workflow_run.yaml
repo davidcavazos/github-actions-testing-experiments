@@ -16,7 +16,6 @@ env:
 jobs:
   affected:
     runs-on: ubuntu-latest
-    continue-on-error: true
     permissions:
       checks: write # for create-check and update-check
     outputs:
@@ -47,6 +46,9 @@ jobs:
           check-run-id: ${{ steps.check.outputs.run-id }}
           status: in_progress
           title: Running ${{ steps.custard.outputs.num-paths }} package(s)
+      - name:
+        if: always()
+        run: echo "post step"
 
   test:
     needs: affected
