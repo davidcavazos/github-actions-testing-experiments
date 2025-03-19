@@ -1,3 +1,17 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 name: Load inputs
 description: Loads the inputs for the workflow.
 
@@ -13,12 +27,9 @@ outputs:
   pull-request-number:
     description: Pull request number.
     value: ${{ steps.vars.outputs.pull-request-number }}
-  commit-main:
+  main-sha:
     description: Commit SHA of the main branch.
-    value: ${{ steps.vars.outputs.commit-main }}
-  commit-head:
-    description: Commit SHA of the head branch.
-    value: ${{ steps.vars.outputs.commit-head }}
+    value: ${{ steps.vars.outputs.main-sha }}
 
 runs:
   using: composite
@@ -35,5 +46,4 @@ runs:
       shell: bash
       run: |
         echo "pull-request-number=$(cat ${{ steps.artifact.outputs.download-path }}/pull-request-number)" | tee -a "$GITHUB_OUTPUT"
-        echo "commit-main=$(cat ${{ steps.artifact.outputs.download-path }}/commit-main)" | tee -a "$GITHUB_OUTPUT"
-        echo "commit-head=$(cat ${{ steps.artifact.outputs.download-path }}/commit-head)" | tee -a "$GITHUB_OUTPUT"
+        echo "main-sha=$(cat ${{ steps.artifact.outputs.download-path }}/main-sha)" | tee -a "$GITHUB_OUTPUT"

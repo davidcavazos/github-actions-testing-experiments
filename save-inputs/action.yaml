@@ -1,0 +1,41 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: Save inputs
+description: Saves the inputs for the workflow.
+
+inputs:
+  name:
+    description: Artifact name.
+    default: inputs
+  retention-days:
+    description: Number of days to keep the artifact.
+    default: "1"
+
+runs:
+  using: composite
+  steps:
+    - name: Save job inputs
+      shell: bash
+      run: |
+        mkdir -p inputs/
+        echo "${{ github.event.number }}" | tee inputs/pull-request-number
+        echo "${{ github.event.before }}" | tee inputs/main-sha
+    - name: Upload inputs artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.name }}
+        path: inputs/
+        retention-days: ${{ inputs.retention-days }}
+
