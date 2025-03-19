@@ -63,6 +63,7 @@ jobs:
     env:
       JOB_NAME: test (${{ matrix.path }})
     steps:
+      - run: echo "${{ github.job }}"
       - name: Get job
         uses: davidcavazos/github-actions-testing-experiments/get-job@main
         id: job
