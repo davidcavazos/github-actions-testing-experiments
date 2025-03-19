@@ -31,7 +31,7 @@ jobs:
         id: check
         with:
           commit-sha: ${{ env.HEAD_SHA }}
-          name: -- Summary --
+          name: _ Summary _
           status: queued
           title: Finding affected packages
           summary: My summary
