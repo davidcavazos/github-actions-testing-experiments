@@ -25,8 +25,6 @@ jobs:
       - name: Get job
         uses: davidcavazos/github-actions-testing-experiments/get-job@main
         id: job
-        with:
-          job-name: affected
       - name: Create check in_progress
         uses: davidcavazos/github-actions-testing-experiments/create-check@main
         id: check
@@ -61,7 +59,7 @@ jobs:
       matrix:
         path: ${{ fromJson(needs.affected.outputs.paths) }}
     env:
-      JOB_NAME: test (${{ matrix.path }})
+      JOB_NAME: ${{ github.job }} (${{ matrix.path }})
     steps:
       - name: Get job
         uses: davidcavazos/github-actions-testing-experiments/get-job@main
@@ -73,8 +71,8 @@ jobs:
         uses: davidcavazos/github-actions-testing-experiments/create-status@main
         with:
           commit-sha: ${{ env.HEAD_SHA }}
-          name: ${{ env.JOB_NAME }}
-          title: Setting up environment
+          name: ${{ github.workflow }} / ${{ env.JOB_NAME }}
+          title: Running tests
           details-url: ${{ steps.job.outputs.url }}
 
       - name: Checkout ${{ env.HEAD_SHA }}
@@ -88,7 +86,7 @@ jobs:
         uses: davidcavazos/github-actions-testing-experiments/create-status@main
         with:
           commit-sha: ${{ env.HEAD_SHA }}
-          name: ${{ env.JOB_NAME }}
+          name: ${{ github.workflow }} / ${{ env.JOB_NAME }}
           status: success
           details-url: ${{ steps.job.outputs.url }}
 

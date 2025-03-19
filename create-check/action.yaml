@@ -60,9 +60,9 @@ runs:
           if (detailsUrl) {
             core.warning(`details-url is not supported unless in a GitHub app.`);
           }
-          const title = `${{ inputs.title }}`;
+          const title = `${{ inputs.title }}` || undefined;
           const summary = `${{ inputs.summary }}`;
-          const text = `${{ inputs.text }}`;
+          const text = `${{ inputs.text }}` || undefined;
           let output = undefined;
           if (title || summary || text) {
             output = {title: title, summary: summary, text: text};
