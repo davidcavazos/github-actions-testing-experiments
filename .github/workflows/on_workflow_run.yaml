@@ -16,7 +16,7 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     permissions:
-      checks: write # for github.rest.checks.create()
+      checks: write # for create-check and update-check
     outputs:
       pull-request-number: ${{ steps.inputs.outputs.pull-request-number }}
       paths: ${{ steps.custard.outputs.paths }}
@@ -42,6 +42,9 @@ jobs:
         id: inputs
         with:
           run-id: ${{ github.event.workflow_run.id }}
+      - run: echo "head ${{ steps.inputs.outputs.commit-head }}"
+      - run: echo "main ${{ steps.inputs.outputs.commit-main }}"
+      - run: echo "ctx  ${{ github.event.workflow_run.head_sha }}"
       - name: Find affected packages
         uses: davidcavazos/github-actions-testing-experiments/affected@main
         id: custard
@@ -61,96 +64,42 @@ jobs:
     needs: affected
     runs-on: ubuntu-latest
     permissions:
-      checks: write # for github.rest.checks.create()
+      statuses: write # for create-status and update-status
     strategy:
       fail-fast: false
       matrix:
         path: ${{ fromJson(needs.affected.outputs.paths) }}
+    env:
+      JOB_NAME: test (${{ matrix.path }})
     steps:
-      - name: Check queued
-        id: check
-        uses: actions/github-script@v7
+      - name: Get job
+        uses: davidcavazos/github-actions-testing-experiments/get-job@main
+        id: job
         with:
-          script: |
-            // https://docs.github.com/en/rest/actions/workflow-jobs?apiVersion=2022-11-28#list-jobs-for-a-workflow-run
-            // https://octokit.github.io/rest.js/v21/#actions-list-jobs-for-workflow-run
-            const jobs = await github.rest.actions.listJobsForWorkflowRun({
-              owner: "${{ github.repository_owner }}",
-              repo: "${{ github.event.repository.name }}",
-              run_id: "${{ github.run_id }}",
-            });
-            let job_url = "";
-            for (const job of jobs.data.jobs) {
-              console.log(job.name);
-              if (job.name == `test (${{ matrix.path }})`) {
-                job_url = job.html_url;
-              }
-            }
-            console.log(`job_url: ${job_url}`)
-
-            // https://docs.github.com/en/rest/checks/runs?apiVersion=2022-11-28#create-a-check-run
-            // https://octokit.github.io/rest.js/v21/#checks-create
-            const check = await github.rest.checks.create({
-              owner: "${{ github.repository_owner }}",
-              repo: "${{ github.event.repository.name }}",
-              head_sha: "${{ github.event.workflow_run.head_sha }}",
-              name: `test - ${{ matrix.path }}`,
-              status: "queued",
-              output: {
-                title: "Setting up environment.",
-                summary: "My summary",
-                text: "My text",
-              },
-            });
-            return {
-              id: check.data.id,
-              url: "",
-            };
+          job-name: ${{ env.JOB_NAME }}
+      - name: Create status queued
+        id: check
+        uses: davidcavazos/github-actions-testing-experiments/create-status@main
+        with:
+          commit-sha: ${{ github.event.workflow_run.head_sha }}
+          name: ${{ env.JOB_NAME }}
+          title: Setting up environment
+          details-url: ${{ steps.job.outputs.url }}
 
       - name: Checkout ${{ github.event.workflow_run.head_sha }}
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
-
-      - name: Check in_progress
-        uses: actions/github-script@v7
-        with:
-          script: |
-            // https://docs.github.com/en/rest/checks/runs?apiVersion=2022-11-28#update-a-check-run
-            // https://octokit.github.io/rest.js/v21/#checks-update
-            github.rest.checks.update({
-              owner: "${{ github.repository_owner }}",
-              repo: "${{ github.event.repository.name }}",
-              check_run_id: "${{ fromJson(steps.check.outputs.result).id }}",
-              status: "in_progress",
-              output: {
-                title: "Running tests",
-                summary: "My summary",
-                text: "My text",
-              },
-            });
-
       - name: Run tests
         run: sh tests.sh
 
-      - name: Check completed
-        uses: actions/github-script@v7
+      - name: Update status success
+        uses: davidcavazos/github-actions-testing-experiments/create-status@main
         with:
-          script: |
-            // https://docs.github.com/en/rest/checks/runs?apiVersion=2022-11-28#update-a-check-run
-            // https://octokit.github.io/rest.js/v21/#checks-update
-            github.rest.checks.update({
-              owner: "${{ github.repository_owner }}",
-              repo: "${{ github.event.repository.name }}",
-              check_run_id: "${{ fromJson(steps.check.outputs.result).id }}",
-              status: "completed",
-              conclusion: "success",
-              output: {
-                title: "",
-                summary: "My summary",
-                text: "My text",
-              },
-            });
+          commit-sha: ${{ github.event.workflow_run.head_sha }}
+          name: ${{ env.JOB_NAME }}
+          status: success
+          title: Done
 
   github-context:
     runs-on: ubuntu-latest
