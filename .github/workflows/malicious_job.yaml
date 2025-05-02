@@ -1,0 +1,13 @@
+name: 🚨 Malicious job
+
+on:
+  pull_request_target:
+
+jobs:
+  malicious-job:
+    name: This should not run
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "🚨 Malicious priviledged code running 🚨"
+          false
